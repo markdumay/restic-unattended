@@ -426,19 +426,6 @@ If you do not feel comfortable copying secrets from your command line, you can u
 ./create_secret.sh B2_ACCOUNT_KEY
 ```
 
-Set `external` to `true` in the `secrets` section of `docker-compose.yml` to use Docker secrets instead of local files.
-
-```Dockerfile
-[...]
-secrets:
-    RESTIC_PASSWORD:
-        external: true
-    STAGE_B2_ACCOUNT_ID:
-        external: true
-    STAGE_B2_ACCOUNT_KEY:
-        external: true
-```
-
 ### Step 4 - Run Docker Service
 Pending your choice to use environment variables or Docker secrets, you can deploy your service using Docker Compose or Stack Deploy.
 
