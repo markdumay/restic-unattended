@@ -1,0 +1,25 @@
+secrets:
+  RESTIC_PASSWORD:
+    file: secrets/RESTIC_PASSWORD
+    external: false
+  B2_ACCOUNT_ID:
+    file: secrets/B2_ACCOUNT_ID
+    external: false
+  B2_ACCOUNT_KEY:
+    file: secrets/B2_ACCOUNT_KEY
+    external: false
+
+services:
+  restic:
+    build:
+      dockerfile: docker/Dockerfile
+      context: .
+      args:
+        BUILD_VERSION: "${BUILD_VERSION}"
+        BUILD_UID: "${BUILD_UID}"
+        BUILD_GID: "${BUILD_GID}"
+        BUILD_FLAGS: --add-shell
+        BUILD_TARGET: test
+        GOLANG_VERSION: "${GOLANG_VERSION}"
+        RESTIC_VERSION: "${RESTIC_VERSION}"
+    command: ["/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait"]

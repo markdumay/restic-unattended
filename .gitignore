@@ -1,0 +1,21 @@
+# dotenv environment variables file
+.env
+
+# gren configuration
+.grenrc.yml
+
+# Secrets folder for testing purposes
+/secrets
+
+# Local filesystem files
+.DS_Store
+
+# Go cached files
+/pkg
+/bin
+
+# Temporary data
+/data
+
+# Visual Studio Code
+.vscode
