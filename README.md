@@ -283,7 +283,7 @@ To review *all* supported environment variables instead, run `restic-unattended 
 #### Making the First Backup
 Now test the configuration by creating the first backup. Use the following command to create a backup on the spot and to init the remote repository if needed.
 ```console
-container:~restic-unattended backup /data/backup --init
+container:~$ restic-unattended backup /data/backup --init
 ```
 
 After some processing, the output should look similar to this.
@@ -304,7 +304,7 @@ Finished backup operation of path '/data/backup'
 #### Restoring the First Backup
 Now perform a restore operation to test the backup worked. Use the following command to restore the data to the `/data/restore` folder, which has been created by Docker during initialization. Please note that restore uses the latest available snapshot by default, but can be instructed to use a specific snapshot instead. See `restic-unattended restore -h` and `restic-unattended snapshots -h` for more details.
 ```
-container:~restic-unattended restore /data/restore
+container:~$ restic-unattended restore /data/restore
 ```
 
 The output should look similar to this.
@@ -325,7 +325,7 @@ The scheduler fires `backup` and `forget` jobs at the specified intervals. In th
 
 Test the scheduling functionality with the following command.
 ```console
-container:~restic-unattended schedule '0 * * * * *' -p=/data/backup --forget='30 * * * * *' --keep-last=5
+container:~$ restic-unattended schedule '0 * * * * *' -p=/data/backup --forget='30 * * * * *' --keep-last=5
 ```
 
 The schedule job keeps on running until you hit `ctrl-c`. You should see logging output similar to the below example. The timestamps have been removed for brevity (and can also be omitted by using the flag `--logformat=default`). 
