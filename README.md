@@ -41,7 +41,7 @@
 ## About
 [Restic][restic_url] is a fast and secure backup program. It supports  many backends for storing backups natively, including AWS S3, Openstack Swift, Backblaze B2, Microsoft Azure Blob Storage, and Google Cloud Storage. *Restic-unattended* is a helper utility written in Go to run restic backups with a built-in scheduler. Running as an unprivileged Docker container, *restic-unattended* simplifies the management of credentials and other sensitive data by using Docker secrets.
 
-> **Looking for testers.** *Restic-unattended* has been integration tested with Backblaze B2. Your feedback on the integration with any of the other supported backends is much appreciated.
+> **Looking for testers.** *Restic-unattended* has been integration tested with Backblaze B2. Your feedback on the integration with any other supported backend is much appreciated.
 
 <!-- TODO: add tutorial deep-link 
 Detailed background information is available on the author's [personal blog][blog].
@@ -51,31 +51,31 @@ Detailed background information is available on the author's [personal blog][blo
 The project uses the following core software components:
 * [Cobra][cobra_url] - Go library to generate CLI applications (including [Viper][viper_url] and [pflag][pflag_url])
 * [Cron][cron_url] - Go library to schedule jobs using cron notation
+* [Dbm][dbm_url] - Helper utility to build, harden, and deploy Docker images
 * [Docker][docker_url] - Open-source container platform
 * [Restic][restic_url] - Secure backup program
-* [dbm][dbm_url] - Docker Build Manager
 
 ## Prerequisites
 *Restic-unattended* can run on any Docker-capable host. The setup has been tested locally on macOS Big Sur and in production on a server running Ubuntu 20.04 LTS. Cloud storage has been tested with Backblaze B2, although other storage providers are supported too.
 
 * **Docker Engine and Docker Compose are required** - *restic-unattended* is intended to be deployed as a Docker container using Docker Compose for convenience. Docker Swarm is a prerequisite to enable Docker *secrets*, however, the use of Docker secrets itself is optional. This [reference guide][swarm_init] explains how to initialize Docker Swarm on your host.
 
-* **A storage provider is required** - Restic supports several storage providers by default. Cloud providers include Amazon S3, Minio Server, Wasabi, OpenStack Swift, Backblaze B2, Microsoft Azure Blob Storage, and Google Cloud Storage. Next to that, local backups are supported too, as well as storage via SFTP, a REST server, or rclone. See the [restic documentation][restic_repo] for more details.
+* **A storage provider is required** - Restic supports several storage providers out of the box. Cloud providers include Amazon S3, Minio Server, Wasabi, OpenStack Swift, Backblaze B2, Microsoft Azure Blob Storage, and Google Cloud Storage. Next to that, local backups are supported too, as well as storage via SFTP, a REST server, or rclone. See the [restic documentation][restic_repo] for more details.
 
 ## Testing
 It is recommended to test the services locally before deploying them in a production environment. Running the services with `docker-compose` greatly simplifies validating everything is working as expected. Below four steps will allow you to run the services on your local machine and validate they are working correctly.
 
 ### Step 1 - Clone the Repository and Setup the Build Tool
-The first step is to clone the repository to a local folder. Assuming you are in the working folder of your choice, clone the repository files with `git clone`. Git automatically creates a new folder `restic-unattended` and copies the files to this directory. Change your working folder to be prepared for the next steps. The code examples use Backblaze B2 as the storage provider, replace them with the correct keys for your storage provider of choice as needed.
+The first step is to clone the repository to a local folder. Assuming you are in the working folder of your choice, clone the repository files with `git clone`. Git automatically creates a new folder `restic-unattended` and copies the files to this directory. Change your working folder to be prepared for the next steps. The code examples use Backblaze B2 as the storage provider. Be sure to replace the credentials with the correct ones.
 
 ```console
-git clone --recurse-submodules https://github.com/markdumay/restic-unattended.git
-cd restic-unattended
+local:~$ git clone --recurse-submodules https://github.com/markdumay/restic-unattended.git
+local:~$ cd restic-unattended
 ```
 
 The repository uses [dbm][dbm_url] to simplify the build and deployment process. Setup an alias to simplify the execution of dbm.
 ```
-alias dbm="dbm/dbm.sh"  
+~/restic-unattended$ alias dbm="dbm/dbm.sh"  
 ```
 Add the same line to your shell settings (e.g. ~/.zshrc on macOS or ~/.bashrc on Ubuntu with bash login) to make the alias persistent.
 
@@ -83,7 +83,7 @@ Add the same line to your shell settings (e.g. ~/.zshrc on macOS or ~/.bashrc on
 The `docker-compose.yml` file uses environment variables to simplify the configuration. You can use the sample file in the repository as a starting point.
 
 ```console
-mv sample.env .env
+local:~/restic-unattended$ mv sample.env .env
 ```
 
 *Restic-unattended* recognizes the various [environment variables][restic_env] supported by restic. On top of that, several variables with the suffix `_FILE` are introduced to support Docker secrets. Lastly, three additional variables are supported to simplify configuration and logging. The below table gives an overview of the available environment variables.
@@ -228,10 +228,10 @@ RESTIC_REPOSITORY=b2:XXXXX:/
 
 Please note that the sensitive environment variables now have a `_FILE` suffix and all point to the location `/run/secrets/`. Docker mounts all secrets to this location by default. Now create the following file-based secrets:
 ```console
-mkdir secrets
-printf XXXXX > secrets/RESTIC_PASSWORD
-printf XXXXXXXXXXXXXXXXXXXXXXXXX > secrets/B2_ACCOUNT_ID
-printf XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX > secrets/B2_ACCOUNT_KEY
+local:~/restic-unattended$ mkdir secrets
+local:~/restic-unattended$ printf XXXXX > secrets/RESTIC_PASSWORD
+local:~/restic-unattended$ printf XXXXXXXXXXXXXXXXXXXXXXXXX > secrets/B2_ACCOUNT_ID
+local:~/restic-unattended$ printf XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX > secrets/B2_ACCOUNT_KEY
 ```
 
 ### Step 4 - Run Docker Container
@@ -242,11 +242,11 @@ printf "This is a sample file to test restic backup and restore" > data/backup/t
 
 The repository contains a helper script to run the Docker container. Use the below command to download an image for debugging (which has built-in shell support) and access the command line from within the container.
 ```console
-dbm dev up -t
+local:~/restic-unattended$ dbm dev up -t
 ```
 
 The script then validates the host machine, identifies the targeted image, and brings up the container and network. Running on a mac in the development mode `dev`, the output should look similar to this.
-```
+```console
 Warn: env file not found
 Validating environment
   Docker Engine: v20.10.0
@@ -260,14 +260,13 @@ Bringing containers and networks up
 
 Creating network "docker_restic" with the default driver
 Creating docker_restic_1 ... done
-/ $
 ```
 
 
 #### Test the Environment Variables
 From within the container, run the following command to validate the environment variables are properly initialized.
 ```
-restic-unattended list
+container:~$ restic-unattended list
 ```
 
 The output should look similar to this:
@@ -284,7 +283,7 @@ To review *all* supported environment variables instead, run `restic-unattended 
 #### Making the First Backup
 Now test the configuration by creating the first backup. Use the following command to create a backup on the spot and to init the remote repository if needed.
 ```
-restic-unattended backup /data/backup --init
+container:~restic-unattended backup /data/backup --init
 ```
 
 After some processing, the output should look similar to this.
@@ -305,7 +304,7 @@ Finished backup operation of path '/data/backup'
 #### Restoring the First Backup
 Now perform a restore operation to test the backup worked. Use the following command to restore the data to the `/data/restore` folder, which has been created by Docker during initialization. Please note that restore uses the latest available snapshot by default, but can be instructed to use a specific snapshot instead. See `restic-unattended restore -h` and `restic-unattended snapshots -h` for more details.
 ```
-restic-unattended restore /data/restore
+container:~restic-unattended restore /data/restore
 ```
 
 The output should look similar to this.
@@ -325,14 +324,14 @@ Test the scheduled backup functionality once the one-off backup is working corre
 The scheduler fires `backup` and `forget` jobs at the specified intervals. In this test, the data to be backed up is very small and the jobs are both expected to finish in less than 30 seconds. The scheduler processes one job at a time only, following a First In, First Out (FIFO) policy. If a current job is still running, the next job is delayed until the current job has finished. A maximum of 5 jobs is kept at any time. Additional jobs will be dropped when the maximum capacity has been reached. In practice, it is recommended to time the typical duration of your jobs and to set a realistic schedule for both types of jobs.
 
 Test the scheduling functionality with the following command.
-```
-restic-unattended schedule '0 * * * * *' -p=/data/backup --forget='30 * * * * *' --keep-last=5
+```console
+container:~restic-unattended schedule '0 * * * * *' -p=/data/backup --forget='30 * * * * *' --keep-last=5
 ```
 
 The schedule job keeps on running until you hit `ctrl-c`. You should see logging output similar to the below example. The timestamps have been removed for brevity (and can also be omitted by using the flag `--logformat=default`). 
 
 The first section displays several initialization messages.
-```
+```console
 INFO   | Executing schedule command
 INFO   | Scheduling job 'backup' with cron spec '0 * * * * *'
 INFO   | First 'backup' job scheduled to run at 'TIME'
@@ -341,7 +340,7 @@ INFO   | First 'forget' job scheduled to run at 'TIME'
 ```
 
 The `forget` operation shows output similar to this once it started running.
-```
+```console
 INFO   | Starting forget operation
 INFO   | Applying Policy: keep 5 latest snapshots
 INFO   | keep 3 snapshots:
@@ -371,7 +370,7 @@ INFO   | Finished forget operation
 ```
 
 The `backup` operation shows output similar to this.
-```
+```console
 INFO   | Starting backup operation of path '/data/backup'
 INFO   | Files:           0 new,     0 changed,     1 unmodified
 INFO   | Dirs:            0 new,     2 changed,     0 unmodified
@@ -382,7 +381,7 @@ INFO   | Finished backup operation of path '/data/backup'
 ```
 
 Hit `ctrl-c` to stop the scheduler.
-```
+```console
 WARN   | Worker processing canceled
 FATAL  | Error running schedule command error="Cron processing interrupted"
 ```
@@ -413,17 +412,17 @@ The steps for deploying in production are slightly different than for local test
 Instead of file-based secrets, you will now create more secure secrets. Docker secrets can be easily created using pipes. Do not forget to include the final `-`, as this instructs Docker to use piped input. Update the tokens as needed.
 
 ```console
-printf XXXXX | docker secret create RESTIC_PASSWORD -
-printf XXXXXXXXXXXXXXXXXXXXXXXXX | docker secret create B2_ACCOUNT_ID -
-printf XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX | docker secret create B2_ACCOUNT_KEY -
+local:~/restic-unattended$ printf XXXXX | docker secret create RESTIC_PASSWORD -
+local:~/restic-unattended$ printf XXXXXXXXXXXXXXXXXXXXXXXXX | docker secret create B2_ACCOUNT_ID -
+local:~/restic-unattended$ printf XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX | docker secret create B2_ACCOUNT_KEY -
 ```
 
 If you do not feel comfortable copying secrets from your command line, you can use the wrapper `create_secret.sh`. This script prompts for a secret and ensures sensitive data is not displayed on your console. The script is available in the folder `/docker-secret` of your repository.
 
 ```console
-./create_secret.sh RESTIC_PASSWORD
-./create_secret.sh B2_ACCOUNT_ID
-./create_secret.sh B2_ACCOUNT_KEY
+local:~/restic-unattended/docker-secret$ ./create_secret.sh RESTIC_PASSWORD
+local:~/restic-unattended/docker-secret$ ./create_secret.sh B2_ACCOUNT_ID
+local:~/restic-unattended/docker-secret$ ./create_secret.sh B2_ACCOUNT_KEY
 ```
 
 ### Step 4 - Run Docker Service
@@ -436,47 +435,48 @@ Pending your choice to use environment variables or Docker secrets, you can depl
 Docker Swarm is needed to support external Docker secrets. As such, the services will be deployed as part of a Docker Stack in production. Deploy the stack using `docker-compose` as input. This ensures the environment variables are parsed correctly. The helper script `dbm` generates the configuration using the applicable `.yml` files and deploys the services to the stack `restic-unattended`. The provided `docker-compose.yml` does not invoke the schedule command yet, nor does it support a shell terminal. For testing purposes, deploy a development container `dev` first.
 
 ```console
-dbm dev deploy
+local:~/restic-unattended$ dbm dev deploy
 ```
 
 Run the following command to inspect the status of the Docker Stack.
 
 ```console
-docker stack services restic-unattended
+local:~/restic-unattended$ docker stack services restic-unattended
 ```
 
 You should see the value `1/1` for `REPLICAS` for the restic service if the stack was initialized correctly. It might take a while before the services are up and running, so simply repeat the command after a few minutes if needed.
 
-```
+```console
 ID  NAME                      MODE        REPLICAS  IMAGE                                      PORTS
 *** restic-unattended_restic  replicated  1/1       markdumay/restic-unprivileged:0.5.0-debug   
 ```
 
 Docker Swarm assigns a unique name to its deployed services. Retrieve the ID of the service by running `docker ps`.
-```
+```console
 CONTAINER ID  IMAGE                                      COMMAND                 NAMES
 ID            markdumay/restic-unprivileged:0.5.0-debug  "/bin/sh -c 'trap : …"  restic-unattended_restic.1.***
 ```
 
 With the obtained ID, run the following command to validate the environment variables within the service are properly set.
 ```console
-docker exec -it ID restic-unattended list
+local:~/restic-unattended$ docker exec -it ID restic-unattended list
 ```
 
 If the service is running as expected, remove the debug service as such.
 ```console
-docker stack rm restic-unattended
+local:~/restic-unattended$ docker stack rm restic-unattended
 ```
 
 Add a `schedule` command to the production image 'docker-compose.prod.yml` to ensure restic-unattended is running as daemon. See the <a href="#usage">next paragraph</a> for examples. Once done, deploy the production version of the image with the following command.
 ```console
-dbm prod deploy
+local:~/restic-unattended$ dbm prod deploy
 ```
 
 You can view the service logs with `docker service logs restic-unattended_restic` once the service is up and running. Debugging swarm services can be quite tedious. If for some reason your service does not initiate properly, you can get its task ID with `docker service ps restic-unattended_restic`. Running `docker inspect <task-id>` might give you some clues to what is happening. Use `docker stack rm restic-unattended` to remove the Docker stack entirely.
 
 ## Usage
 *Restic-unattended* is intended to run from within a Docker container as an unattended service. As such, the most common use case is to define a schedule command in the `docker/docker-compose.yml` file. As an example, the below command instructs restic to perform a backup every 15 minutes and to remove obsolete snapshots daily at 01:00 am. It keeps the last 5 backups, the latest daily snapshot for the past 7 days, and the latest weekly snapshot for the last 13 weeks. In production, it is recommended to add the `--sustained` flag to ensure *restic-unattended* keeps running despite any errors. Be sure to use the `[""]` notation for the `cmd` specification, as the production-ready image does not support a built-in shell.
+
 ```yml
 [...]
 services:
@@ -495,7 +495,7 @@ Several commands and flags are supported, which are described in the following p
 ### Backup
 Creates a backup of the specified path and its subdirectories and stores it in a repository. The repository can be stored locally, or on a remote server. Backup connects to a previously initialized repository only, unless the flag `--init` is added.
 
-```
+```console
 Usage:
   restic-unattended backup <path> [flags]
 
@@ -508,7 +508,7 @@ Flags:
 ### Forget
 Forget removes old backups according to a rotation schedule. It both flags snapshots for removal as well as deletes (prunes) the actual old snapshot from the repository.
 
-```
+```console
 Examples:
 restic-unattended forget --keep-last 5
 Keep the 5 most recent snapshots
@@ -534,7 +534,7 @@ Flags:
 ### Help
 Help provides help for any command in the application. Simply type `restic-unattended help [path to command]` for full details.
 
-```
+```console
 Usage:
   restic-unattended help [command] [flags]
 
@@ -545,7 +545,7 @@ Flags:
 ### List
 *Restic-unattended* supports several environment variables on top of the default variables supported by restic. The additional variables typically end with a "_FILE" suffix. When initialized, *restic-unattended* reads the value from the specified variable file and maps it to the associated variable. This allows the initialization of Docker secrets as regular environment variables, restricted to the current process environment. Typically Docker secrets are mounted to the `/run/secrets` path, but this is not a prerequisite.
 
-```
+```console
 Usage:
   restic-unattended list [flags]
 
@@ -557,7 +557,7 @@ Flags:
 ### Restore
 Restores a backup stored in a restic repository to a local path.
 
-```
+```console
 Usage:
   restic-unattended restore <path> [flags]
 
@@ -596,7 +596,7 @@ Predefined schedules:
 The following predefined schedules may be used instead of the common cron fields:
 `@yearly` (or `@annually`), `@monthly`, `@weekly`, `@daily` (or `@midnight`), and `@hourly`.
 
-```
+```console
 Examples:
 restic-unattended schedule '0 0,12 * * *'
 Runs a scheduled backup at midnight and noon every day.
@@ -631,7 +631,7 @@ Flags:
 ### Snapshots
 The "snapshots" command lists all snapshots stored in the repository.
 
-```
+```console
 Usage:
   restic-unattended snapshots [flags]
 
@@ -642,7 +642,7 @@ Flags:
 ### Version
 The "version" command displays information about the version of this software.
 
-```
+```console
 Usage:
   restic-unattended version [flags]
 
@@ -652,7 +652,7 @@ Flags:
 
 ### Global Flags
 The following flags apply to all commands.
-```
+```console
 Global Flags:
       --config string     config file (default is $HOME/.restic-unattended.yaml)
   -f, --logformat string  Log format to use: default, pretty, json (default "default")
@@ -662,7 +662,7 @@ Global Flags:
 ## Contributing
 1. Clone the repository and create a new branch 
     ```console
-    git checkout https://github.com/markdumay/restic-unattended.git -b name_for_new_branch
+    local:~$ git checkout https://github.com/markdumay/restic-unattended.git -b name_for_new_branch
     ```
 2. Make and test the changes
 3. Submit a Pull Request with a comprehensive description of the changes
