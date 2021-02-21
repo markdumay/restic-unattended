@@ -265,12 +265,12 @@ Creating docker_restic_1 ... done
 
 #### Test the Environment Variables
 From within the container, run the following command to validate the environment variables are properly initialized.
-```
+```console
 container:~$ restic-unattended list
 ```
 
 The output should look similar to this:
-```
+```console
 VARIABLE            	SET	DESCRIPTION                                                                 
 B2_ACCOUNT_ID_FILE  	Yes	Name of file containing the Account ID or applicationKeyId for Backblaze B2	
 B2_ACCOUNT_KEY_FILE 	Yes	Name of file containing the Account Key or applicationKey for Backblaze B2 	
@@ -282,12 +282,12 @@ To review *all* supported environment variables instead, run `restic-unattended 
 
 #### Making the First Backup
 Now test the configuration by creating the first backup. Use the following command to create a backup on the spot and to init the remote repository if needed.
-```
+```console
 container:~restic-unattended backup /data/backup --init
 ```
 
 After some processing, the output should look similar to this.
-```
+```console
 Starting backup operation of path '/data/backup'
 
 Files:           1 new,     0 changed,     0 unmodified
@@ -308,7 +308,7 @@ container:~restic-unattended restore /data/restore
 ```
 
 The output should look similar to this.
-```
+```console
 Starting restore operation for snapshot 'latest'
 restoring <Snapshot XXXXXXXX of [/data/backup] at DATE by USER> to /data/restore
 
@@ -388,7 +388,7 @@ FATAL  | Error running schedule command error="Cron processing interrupted"
 
 #### Stopping the Test
 Stop execution of the container by entering `exit` on the container's command line. Dbm then automatically removes the created container and network.
-```
+```console
 Stopping docker_restic_1 ... done
 Removing docker_restic_1 ... done
 Removing network docker_restic
