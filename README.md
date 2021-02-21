@@ -303,7 +303,7 @@ Finished backup operation of path '/data/backup'
 
 #### Restoring the First Backup
 Now perform a restore operation to test the backup worked. Use the following command to restore the data to the `/data/restore` folder, which has been created by Docker during initialization. Please note that restore uses the latest available snapshot by default, but can be instructed to use a specific snapshot instead. See `restic-unattended restore -h` and `restic-unattended snapshots -h` for more details.
-```
+```console
 container:~$ restic-unattended restore /data/restore
 ```
 
@@ -420,9 +420,9 @@ local:~/restic-unattended$ printf XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX | docker secre
 If you do not feel comfortable copying secrets from your command line, you can use the wrapper `create_secret.sh`. This script prompts for a secret and ensures sensitive data is not displayed on your console. The script is available in the folder `/docker-secret` of your repository.
 
 ```console
-local:~/restic-unattended/docker-secret$ ./create_secret.sh RESTIC_PASSWORD
-local:~/restic-unattended/docker-secret$ ./create_secret.sh B2_ACCOUNT_ID
-local:~/restic-unattended/docker-secret$ ./create_secret.sh B2_ACCOUNT_KEY
+local:~/restic-unattended$ ./docker-secret/create_secret.sh RESTIC_PASSWORD
+local:~/restic-unattended$ ./docker-secret/create_secret.sh B2_ACCOUNT_ID
+local:~/restic-unattended$ ./docker-secret/create_secret.sh B2_ACCOUNT_KEY
 ```
 
 ### Step 4 - Run Docker Service
