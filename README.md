@@ -74,8 +74,8 @@ local:~$ cd restic-unattended
 ```
 
 The repository uses [dbm][dbm_url] to simplify the build and deployment process. Setup an alias to simplify the execution of dbm.
-```
-~/restic-unattended$ alias dbm="dbm/dbm.sh"  
+```console
+local:~/restic-unattended$ alias dbm="dbm/dbm.sh"  
 ```
 Add the same line to your shell settings (e.g. ~/.zshrc on macOS or ~/.bashrc on Ubuntu with bash login) to make the alias persistent.
 
@@ -181,7 +181,7 @@ services:
 ```
 
 Ensure the following variables are available in your `.env` file, replacing `XXX` with the real values:
-```
+```ini
 # Restic settings
 RESTIC_REPOSITORY=b2:XXXXX:/
 RESTIC_PASSWORD=XXXXX
@@ -221,7 +221,7 @@ services:
 ```
 
 Ensure the following variable is available in your `.env` file, replacing `XXX` with the real value:
-```
+```ini
 # Restic settings
 RESTIC_REPOSITORY=b2:XXXXX:/
 ```
@@ -236,8 +236,8 @@ local:~/restic-unattended$ printf XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX > secrets/B2_A
 
 ### Step 4 - Run Docker Container
 Let's create some test data before running the container. Create a file `test.txt` in the folder `./data/backup` and enter some sample text.
-```
-printf "This is a sample file to test restic backup and restore" > data/backup/test.txt
+```console
+local:~/restic-unattended$ printf "This is a sample file to test restic backup and restore" > data/backup/test.txt
 ```
 
 The repository contains a helper script to run the Docker container. Use the below command to download an image for debugging (which has built-in shell support) and access the command line from within the container.
