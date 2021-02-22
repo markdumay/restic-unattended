@@ -21,6 +21,11 @@ services:
         target: "/home/${BUILD_USER}"
       - type: tmpfs
         target: /tmp
+    environment:
+      - RESTIC_LOGLEVEL=${RESTIC_LOGLEVEL}
+      - RESTIC_LOGFORMAT=${RESTIC_LOGFORMAT}
+      - RESTIC_TIMESTAMP=${RESTIC_TIMESTAMP}
+    command: "${RESTIC_CMD}"
 
     # deploy:
     #   restart_policy:

@@ -2,6 +2,9 @@ version: "3.7"
 
 networks:
   restic:
+    name: restic
+    driver_opts:
+      encrypted: ""
 
 volumes:
   backup:
