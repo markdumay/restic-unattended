@@ -443,7 +443,7 @@ Pending your choice to use environment variables or Docker secrets, you can depl
 Docker Swarm is needed to support external Docker secrets. As such, the services will be deployed as part of a Docker Stack in production. Deploy the stack using `docker-compose` as input. This ensures the environment variables are parsed correctly. The helper script `dbm` generates the configuration using the applicable `.yml` files and deploys the services to the stack `restic-unattended`. The provided `docker-compose.yml` does not invoke the schedule command yet, nor does it support a shell terminal. For testing purposes, deploy a development container `dev` first.
 
 ```console
-local:~/restic-unattended$ dbm dev deploy
+local:~/restic-unattended$ dbm prod deploy
 ```
 
 Run the following command to inspect the status of the Docker Stack.
