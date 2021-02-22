@@ -13,6 +13,7 @@ import (
 // Public Functions
 //======================================================================================================================
 
+// GetCLIFlag returns a Flag object as flattened command-line argument.
 func GetCLIFlag(flags *pflag.FlagSet, flag *pflag.Flag) ([]string, error) {
 	var args []string
 

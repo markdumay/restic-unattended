@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// ResticError defines a custom error for failed execution of restic commands.
 type ResticError struct {
 	Err   string // error description
 	Fatal bool   // fatal or non-fatal error
