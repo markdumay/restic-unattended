@@ -69,6 +69,11 @@ RUN set -eu; \
 ARG BUILD_USER
 USER "${BUILD_USER}":"${BUILD_USER}"
 
+# Define the healthcheck (production only)
+ARG BUILD_TARGET
+HEALTHCHECK --interval=5m --timeout=30s --retries=3 \
+    CMD if [[ "${BUILD_TARGET}" == 'production' ]]; then restic-unattended check; else exit 0; fi
+
 # Override entrypoint and start restic-unattended
 # Note: use [""] syntax to avoid invoking potentially missing '/bin/sh'
 ENTRYPOINT [""]

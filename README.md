@@ -505,6 +505,22 @@ Flags:
       --init          initialize the repository if it does not exist yet
 ```
 
+### Check
+The "check" command tests the repository for errors and reports any errors it finds. By default, the "check" command will always load all data directly from the repository and not use a local cache.
+
+```console
+Usage:
+  restic-unattended check [flags]
+
+Flags:
+  -h, --help   help for check
+
+Global Flags:
+      --config string      config file (default is $HOME/.restic-unattended.yaml)
+  -f, --logformat string   Log format to use: default, pretty, json (default "default")
+  -l, --loglevel string    Level of logging to use: panic, fatal, error, warn, info, debug, trace (default "info")
+```
+
 ### Forget
 Forget removes old backups according to a rotation schedule. It both flags snapshots for removal as well as deletes (prunes) the actual old snapshot from the repository.
 
