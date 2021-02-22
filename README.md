@@ -235,11 +235,6 @@ local:~/restic-unattended$ printf XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX > secrets/B2_A
 ```
 
 ### Step 4 - Run Docker Container
-Let's create some test data before running the container. Create a file `test.txt` in the folder `./data/backup` and enter some sample text.
-```console
-local:~/restic-unattended$ printf "This is a sample file to test restic backup and restore" > data/backup/test.txt
-```
-
 The repository contains a helper script to run the Docker container. Use the below command to download an image for debugging (which has built-in shell support) and access the command line from within the container.
 ```console
 local:~/restic-unattended$ dbm dev up -t
@@ -281,28 +276,36 @@ RESTIC_REPOSITORY   	Yes	Location of the repository
 To review *all* supported environment variables instead, run `restic-unattended list -a`.
 
 #### Making the First Backup
+Now let's create some test data to test the backup functionality. Create a file `test.txt` in the folder `~/backup` and enter some sample text.
+
+> The Docker volume `/data/backup` is mounted as read-only by default. Typically it is shared with another container that has full ownership of the volume. The UID and GID of the user running the container need to be the same.
+
+```console
+container:~$ mkdir -p ~/backup
+container:~$ printf "This is a sample file to test restic backup and restore" > ~/backup/backup/test.txt
+```
+
 Now test the configuration by creating the first backup. Use the following command to create a backup on the spot and to init the remote repository if needed.
 ```console
-container:~$ restic-unattended backup /data/backup --init
+container:~$ restic-unattended backup -p ~/backup --init
 ```
 
 After some processing, the output should look similar to this.
 ```console
-Starting backup operation of path '/data/backup'
+Starting backup operation of path '/home/restic/backup'
+no parent snapshot found, will read all files
 
 Files:           1 new,     0 changed,     0 unmodified
-Dirs:            2 new,     0 changed,     0 unmodified
-Added to the repo: 342 B
+Dirs:            3 new,     0 changed,     0 unmodified
+Added to the repo: 1.414 KiB
 
-
-processed 1 files, 3.045 KiB in 0:05
-snapshot 7cadc838 saved
-
-Finished backup operation of path '/data/backup'
+processed 1 files, 55 B in 0:07
+snapshot xxxxxxxx saved
+Finished backup operation of path '/home/restic/backup'
 ```
 
 #### Restoring the First Backup
-Now perform a restore operation to test the backup worked. Use the following command to restore the data to the `/data/restore` folder, which has been created by Docker during initialization. Please note that restore uses the latest available snapshot by default, but can be instructed to use a specific snapshot instead. See `restic-unattended restore -h` and `restic-unattended snapshots -h` for more details.
+Now perform a restore operation to test if the backup did work. Use the following command to restore the data to the `/data/restore` folder, which has been created by Docker during initialization. Please note that restore uses the latest available snapshot by default, but can be instructed to use a specific snapshot instead. See `restic-unattended restore -h` and `restic-unattended snapshots -h` for more details.
 ```console
 container:~$ restic-unattended restore /data/restore
 ```
@@ -310,7 +313,7 @@ container:~$ restic-unattended restore /data/restore
 The output should look similar to this.
 ```console
 Starting restore operation for snapshot 'latest'
-restoring <Snapshot XXXXXXXX of [/data/backup] at DATE by USER> to /data/restore
+restoring <Snapshot XXXXXXXX of [/home/restic/backup] at DATE by USER> to /data/restore
 
 Finished restore operation for snapshot 'latest'
 ```
@@ -324,9 +327,13 @@ Test the scheduled backup functionality once the one-off backup is working corre
 The scheduler fires `backup` and `forget` jobs at the specified intervals. In this test, the data to be backed up is very small and the jobs are both expected to finish in less than 30 seconds. The scheduler processes one job at a time only, following a First In, First Out (FIFO) policy. If a current job is still running, the next job is delayed until the current job has finished. A maximum of 5 jobs is kept at any time. Additional jobs will be dropped when the maximum capacity has been reached. In practice, it is recommended to time the typical duration of your jobs and to set a realistic schedule for both types of jobs.
 
 Test the scheduling functionality with the following command.
+
+> Due to limitations of the used software libraries, the `~` expansion does not work when using `-p=~/backup`. Use a format without the `=` sign instead.
+
 ```console
-container:~$ restic-unattended schedule '0 * * * * *' -p=/data/backup --forget='30 * * * * *' --keep-last=5
+container:~$ restic-unattended schedule '0 * * * * *' -p ~/backup --forget '30 * * * * *' --keep-last 5
 ```
+
 
 The schedule job keeps on running until you hit `ctrl-c`. You should see logging output similar to the below example. The timestamps have been removed for brevity (and can also be omitted by using the flag `--logformat=default`). 
 
@@ -371,13 +378,13 @@ INFO   | Finished forget operation
 
 The `backup` operation shows output similar to this.
 ```console
-INFO   | Starting backup operation of path '/data/backup'
+INFO   | Starting backup operation of path '/home/restic/backup'
 INFO   | Files:           0 new,     0 changed,     1 unmodified
 INFO   | Dirs:            0 new,     2 changed,     0 unmodified
 INFO   | Added to the repo: 342 B
 INFO   | processed 1 files, 3.045 KiB in 0:03
 INFO   | snapshot XXXXXXXX saved
-INFO   | Finished backup operation of path '/data/backup'
+INFO   | Finished backup operation of path '/home/restic/backup'
 ```
 
 Hit `ctrl-c` to stop the scheduler.

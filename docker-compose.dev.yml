@@ -18,6 +18,7 @@ services:
         BUILD_VERSION: "${BUILD_VERSION}"
         BUILD_UID: "${BUILD_UID}"
         BUILD_GID: "${BUILD_GID}"
+        BUILD_USER: "${BUILD_USER}"
         BUILD_FLAGS: --add-shell
         BUILD_TARGET: test
         GOLANG_VERSION: "${GOLANG_VERSION}"

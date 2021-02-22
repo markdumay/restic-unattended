@@ -51,23 +51,28 @@ ARG BUILD_USER
 ARG BUILD_UID
 ARG BUILD_GID
 ARG BUILD_FLAGS
-
-
 RUN set -eu; \
     apk update -f; \
     apk --no-cache add -f shadow; \
-    rm -rf /var/cache/apk/*; \
+    rm -rf /var/cache/apk/* /tmp; \
     chmod +x /usr/local/sbin/harden_alpine.sh; \
     /usr/local/sbin/harden_alpine.sh harden \
         -n "${BUILD_USER}" \
         -u "${BUILD_UID}" \
         -g "${BUILD_GID}" \
+        -v /data/backup \
+        -v /data/restore \
+        -d /home/"${BUILD_USER}" \
+        -d /tmp \
         "${BUILD_FLAGS}"; \
     rm -f /usr/local/sbin/harden_alpine.sh
 
 # Run the container as non-root user
 ARG BUILD_USER
 USER "${BUILD_USER}":"${BUILD_USER}"
+
+# Expose the backup and restore folders as volumes
+VOLUME [ "/data/backup", "/data/restore" ]
 
 # Define the healthcheck (production only)
 ARG BUILD_TARGET

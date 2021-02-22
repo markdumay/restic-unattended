@@ -10,21 +10,17 @@ services:
         BUILD_VERSION: "${BUILD_VERSION}"
         BUILD_UID: "${BUILD_UID}"
         BUILD_GID: "${BUILD_GID}"
+        BUILD_USER: "${BUILD_USER}"
         BUILD_FLAGS: --add-shell --read-only
-        # BUILD_FLAGS: --read-only
         BUILD_TARGET: production
         GOLANG_VERSION: "${GOLANG_VERSION}"
         RESTIC_VERSION: "${RESTIC_VERSION}"
     read_only: true
-    # volumes:
-    #   - type: tmpfs
-    #     target: /var/tmp
-    #   - type: tmpfs
-    #     target: /var/run/mysqld
-    #   - type: tmpfs
-    #     target: /run/mysqld
-    #   - type: tmpfs
-    #     target: /docker-entrypoint-initdb.d
+    volumes:
+      - type: tmpfs
+        target: "/home/${BUILD_USER}"
+      - type: tmpfs
+        target: /tmp
 
     # deploy:
     #   restart_policy:

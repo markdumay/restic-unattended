@@ -3,10 +3,11 @@ version: "3.7"
 networks:
   restic:
 
-# TODO: test backup/restore volumes
-# volumes:
-    # backup:
-    # restore:
+volumes:
+  backup:
+    name: restic_backup
+  restore:
+    name: restic_restore
 
 secrets:
   RESTIC_PASSWORD:
@@ -23,8 +24,8 @@ services:
     networks:
       - restic
     volumes:
-      - ../data/backup:/data/backup:ro
-      - ../data/restore:/data/restore
+      - backup:/data/backup:ro
+      - restore:/data/restore
     environment:
       - RESTIC_REPOSITORY=${RESTIC_REPOSITORY}
       - RESTIC_PASSWORD_FILE=/run/secrets/RESTIC_PASSWORD
