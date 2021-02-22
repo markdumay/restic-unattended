@@ -75,6 +75,13 @@ func worker(jobChan <-chan Job, sigChan <-chan os.Signal, result chan workerResu
 	}
 }
 
+// cronParser generates a parser for cron schedules. It supports optional seconds next to the commonly supported cron
+// fields.
+func cronParser() cron.Parser {
+	return cron.NewParser(cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow |
+		cron.Descriptor)
+}
+
 //======================================================================================================================
 // Public Functions
 //======================================================================================================================
@@ -84,8 +91,7 @@ func worker(jobChan <-chan Job, sigChan <-chan os.Signal, result chan workerResu
 // are supported too. The function returns nil if the specification is valid, or a descriptive error message
 // otherwise.
 func IsValidCron(spec string) error {
-	specParser := cron.NewParser(cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow |
-		cron.Descriptor)
+	specParser := cronParser()
 	_, err := specParser.Parse(spec)
 
 	return err
@@ -113,7 +119,7 @@ func RunCronJobs(jobs []Job, haltOnError bool) error {
 	// setup cron processing, delaying execution if a previous job is still running
 	// jobs are dropped when a backlog of 5 items is reached
 	jobChan := make(chan Job, 5)
-	cron := cron.New(cron.WithSeconds())
+	cron := cron.New(cron.WithParser(cronParser()))
 	for _, j := range jobs {
 		// copy job value to avoid reuse of loop variables across goroutines
 		// see: https://golang.org/doc/effective_go.html?h=panic#channels
