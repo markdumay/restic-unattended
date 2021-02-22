@@ -104,6 +104,7 @@ local:~/restic-unattended$ mv sample.env .env
 | RESTIC_HOST                           |        | Hostname to use in backups (defaults to `$HOSTNAME`) |
 | RESTIC_LOGLEVEL                       |        | Level of logging to use: panic, fatal, error, warn, info, debug, trace |
 | RESTIC_LOGFORMAT                      |        | Log format to use: default, pretty, json (schedule defaults to pretty) |
+| RESTIC_TIMESTAMP                      |        | Add timestamp prefix (RFC3339) to logs: true, false |
 | *Amazon S3 compatible*                |        | |
 | AWS_ACCESS_KEY_ID                     | *      | Amazon S3 access key ID |
 | AWS_ACCESS_KEY_ID_FILE                | Yes    | Name of file containing the Amazon S3 access key ID |
