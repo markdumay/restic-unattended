@@ -2,7 +2,7 @@
 
 <!-- Tagline -->
 <p align="center">
-    <b>Schedule Unattended Remote Backups Using an Unprivileged Restic Container</b>
+    <b>Schedule Unattended Remote Backups Using a Hardened Restic Container</b>
     <br />
 </p>
 
@@ -39,7 +39,7 @@
 
 
 ## About
-[Restic][restic_url] is a fast and secure backup program. It supports  many backends for storing backups natively, including AWS S3, Openstack Swift, Backblaze B2, Microsoft Azure Blob Storage, and Google Cloud Storage. *Restic-unattended* is a helper utility written in Go to run restic backups with a built-in scheduler. Running as an unprivileged Docker container, *restic-unattended* simplifies the management of credentials and other sensitive data by using Docker secrets.
+[Restic][restic_url] is a fast and secure backup program. It supports  many backends for storing backups natively, including AWS S3, Openstack Swift, Backblaze B2, Microsoft Azure Blob Storage, and Google Cloud Storage. *Restic-unattended* is a helper utility written in Go to run restic backups with a built-in scheduler. Running as an unprivileged and hardened Docker container, *restic-unattended* simplifies the management of credentials and other sensitive data by using Docker secrets.
 
 > **Looking for testers.** *Restic-unattended* has been integration tested with Backblaze B2. Your feedback on the integration with any other supported backend is much appreciated.
 
