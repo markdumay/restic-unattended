@@ -80,7 +80,7 @@ func List() error {
 		table.SetRowSeparator("")
 		table.SetHeaderLine(false)
 		table.SetBorder(false)
-		table.SetTablePadding("\t") // pad with tabs
+		table.SetTablePadding("  ") // pad with spaces
 		table.SetNoWhiteSpace(true)
 		table.AppendBulk(overview) // add Bulk Data
 		table.Render()
