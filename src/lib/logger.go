@@ -14,10 +14,6 @@ import (
 // Variables and user-defined types
 //======================================================================================================================
 
-// StructuredLog instructs the logger to print structured logs to the console for easier log aggregation. It is used by
-// the schedule command by default.
-var structuredLog bool = false
-
 // logFormat defines the output format of the logger. It supports three types of formatting. The schedule command uses
 // Pretty formatting by default, the other commands use Default formatting. The formatting can be specified using the
 // environment variable RESTIC_LOGFORMAT or the global flag --logformat.
@@ -110,7 +106,8 @@ func NewLogWriter(l *zerolog.Logger, level zerolog.Level) *LogWriter {
 func (lw LogWriter) Write(p []byte) (n int, err error) {
 	lines := strings.Split(string(p), "\n")
 	for _, line := range lines {
-		if line != "" || !structuredLog {
+		// skip empty lines when not using default logging format
+		if line != "" || logFormat == LogFormat(Default) {
 			Logger.WithLevel(lw.level).Msg(line)
 		}
 	}
