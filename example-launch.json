@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceRoot}/src/main.go",
+            "env": {
+                "B2_ACCOUNT_ID_FILE":"${workspaceRoot}/secrets/B2_ACCOUNT_ID",
+                "B2_ACCOUNT_KEY_FILE":"${workspaceRoot}/secrets/B2_ACCOUNT_KEY",
+                "RESTIC_REPOSITORY":"b2:repository:/",
+                "RESTIC_PASSWORD_FILE":"${workspaceRoot}/secrets/RESTIC_PASSWORD",
+                "RESTIC_HOST":"restic-unattended.docker",
+                "RESTIC_LOGLEVEL":"debug",
+                "RESTIC_LOGFORMAT":"pretty",
+                "RESTIC_BACKUP_PATH":"../data/backup"
+            },
+            "args": ["check"]
+        }
+    ]
+}

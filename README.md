@@ -495,7 +495,7 @@ services:
 
 *Restic-unattended* can also run from the command line (either from the host or from within a development container). The below list describes several scenarios.
 * **From source (command line)** - the host machine requires Go 1.15 or later to be installed. From the `src` directory, run `go run main.go` followed by a specific command.
-* **From source (Visual Studio Code)** - a `launch.json` file is included in the repository. Set `env` and `args` as needed. The Go language tools need to be installed.
+* **From source (Visual Studio Code)** - an `example-launch.json` file is included in the repository. Copy the configuration to `.vscode/launch.json` and set `env` and `args` as needed. The Go language tools need to be installed.
 * **From within a container** - spin up a development container with `dbm dev up -t`. Run `restic-unattended` from within the container.
 
 Several commands and flags are supported, which are described in the following paragraphs. They can also be inspected by using either `restic-unattended -h` or `restic-unattended <command> -h`.
