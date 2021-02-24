@@ -60,8 +60,7 @@ func init() {
 // Public Functions
 //======================================================================================================================
 
-// InitLogger initializes the global logger. If structured is set, the logger is instructed to print structured logs
-// to the console for easier log aggregation. It is used by the schedule command by default.
+// InitLogger initializes the global logger with the desired format.
 func InitLogger(format LogFormat) {
 	logFormat = format
 	var output io.Writer
