@@ -51,16 +51,17 @@ func Version() error {
 }
 
 // VersionInfo returns the user-friendly version of the binary. When running from source (e.g. go run main.go ...), the
-// content of the ../VERSION file is retrieved with a '-src' suffix. Otherwise, the build version compiled into the
-// binary is returned.
+// content of the repository's VERSION file is retrieved with a '-src' suffix. Otherwise, the build version compiled
+// into the binary is returned.
 func VersionInfo() string {
 	if BuildVersion != "" {
 		return BuildVersion
-	} else if _, err := os.Stat("../VERSION"); err == nil {
-		if version, err := lib.ReadLine("../VERSION"); err == nil {
+	}
+	versionFile := lib.SourcePath() + "/VERSION"
+	if _, err := os.Stat(versionFile); err == nil {
+		if version, err := lib.ReadLine(versionFile); err == nil {
 			return fmt.Sprintf("%s-src", version)
 		}
-
 	}
 	return ""
 }
