@@ -45,3 +45,54 @@ func TestIsValidCron(t *testing.T) {
 		}
 	}
 }
+
+func TestRunCronJobs(t *testing.T) {
+	var jobs []Job
+	var logs []string
+	// defined the expected results; pending on the current time, either job 1 or job 2 starts first
+	result1 := []string{
+		"Job 'test 1' has fired",
+		"Job 'test 2' has fired",
+		"Job 'test 1' has fired",
+		"Job 'test 2' has fired",
+	}
+	result2 := []string{
+		"Job 'test 2' has fired",
+		"Job 'test 1' has fired",
+		"Job 'test 2' has fired",
+		"Job 'test 1' has fired",
+	}
+
+	// suppress all log messages unless a (fatal) error occurred
+	zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+
+	// define the first test job, appending messages to the local log
+	var test1 Job
+	test1.Tag = "test 1"
+	test1.Spec = "0/2 * * * * *"
+	test1.Limit = 2
+	test1.RunE = func() error {
+		logs = append(logs, fmt.Sprintf("Job '%s' has fired", test1.Tag))
+		return nil
+	}
+	jobs = append(jobs, test1)
+
+	// define the second test job, appending messages to the local log
+	var test2 Job
+	test2.Tag = "test 2"
+	test2.Spec = "1/2 * * * * *"
+	test2.Limit = 2
+	test2.RunE = func() error {
+		logs = append(logs, fmt.Sprintf("Job '%s' has fired", test2.Tag))
+		return nil
+	}
+	jobs = append(jobs, test2)
+
+	// run the jobs and validate the scheduler processed the job as expected
+	if err := RunCronJobs(jobs, true); err != nil {
+		t.Errorf("RunCronJobs failed, error: %s", err.Error())
+	}
+	if !Equal(logs, result1) && !Equal(logs, result2) {
+		t.Errorf("RunCronJobs failed")
+	}
+}
