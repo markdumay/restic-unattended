@@ -60,14 +60,14 @@ func init() {
 // Public Functions
 //======================================================================================================================
 
-// InitLogger initializes the global logger with the desired format.
-func InitLogger(format LogFormat) {
+// InitLoggerWithWriter initializes the global logger with the desired format and writer.
+func InitLoggerWithWriter(format LogFormat, w io.Writer, noColor bool) {
 	logFormat = format
 	var output io.Writer
 
 	switch logFormat {
 	case LogFormat(Default):
-		writer := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
+		writer := zerolog.ConsoleWriter{Out: w, TimeFormat: time.RFC3339, NoColor: noColor}
 		writer.FormatTimestamp = func(i interface{}) string {
 			return ""
 		}
@@ -80,17 +80,22 @@ func InitLogger(format LogFormat) {
 		}
 		output = writer
 	case LogFormat(Pretty):
-		writer := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
+		writer := zerolog.ConsoleWriter{Out: w, TimeFormat: time.RFC3339, NoColor: noColor}
 		writer.FormatTimestamp = nil
 		writer.FormatLevel = func(i interface{}) string {
 			return strings.ToUpper(fmt.Sprintf("| %-6s |", i))
 		}
 		output = writer
 	case LogFormat(JSON):
-		output = os.Stdout
+		output = w
 	}
 
 	Logger = zerolog.New(output).With().Timestamp().Logger()
+}
+
+// InitLogger initializes the global logger with the desired format.
+func InitLogger(format LogFormat) {
+	InitLoggerWithWriter(format, os.Stdout, false)
 }
 
 // NewLogWriter returns the global logger with an instruction to write a message at the specified level.
