@@ -6,11 +6,25 @@ package lib
 import (
 	"bufio"
 	"os"
+	"path"
 )
 
 //======================================================================================================================
 // Public Functions
 //======================================================================================================================
+
+// Equal tells whether a and b contain the same elements. A nil argument is equivalent to an empty slice.
+func Equal(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
+}
 
 // ReadLine returns the first line of a text file indicated by a path. It returns an error if the file cannot be found.
 func ReadLine(path string) (string, error) {
@@ -25,4 +39,18 @@ func ReadLine(path string) (string, error) {
 	scanner.Scan()
 
 	return scanner.Text(), nil
+}
+
+// SourcePath returns the assumed main directory of the repository.
+func SourcePath() string {
+	if currentWorkingDirectory, err := os.Getwd(); err == nil {
+		if path.Base(currentWorkingDirectory) == "cmd" {
+			return path.Clean(currentWorkingDirectory + "/../..")
+		} else if path.Base(currentWorkingDirectory) == "src" {
+			return path.Clean(currentWorkingDirectory + "/..")
+		} else {
+			return currentWorkingDirectory
+		}
+	}
+	return ""
 }
