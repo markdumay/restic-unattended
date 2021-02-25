@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -33,6 +34,13 @@ type LogWriter struct {
 
 // LogFormat defines the type of logging format to use.
 type LogFormat int
+
+// LogMessage defines the structure of JSON-formatted log messages produced by zerolog.
+type LogMessage struct {
+	Level   zerolog.Level `json:"level"`
+	Time    time.Time     `json:"time"`
+	Message string        `json:"message"`
+}
 
 // Defines a pseudo enumeration of possible logging formats.
 const (
@@ -130,4 +138,32 @@ func ParseFormat(formatStr string) (LogFormat, error) {
 		return LogFormat(JSON), nil
 	}
 	return LogFormat(Default), fmt.Errorf("Unknown Log Format String: '%s', using default", formatStr)
+}
+
+// UnmarshalLog converts json bytes into a LogMessage instance.
+func UnmarshalLog(bytes []byte) (*LogMessage, error) {
+	// construct a placeholder with looser typing
+	raw := struct {
+		Level   string    `json:"level"`
+		Time    time.Time `json:"time"`
+		Message string    `json:"message"`
+	}{}
+
+	// convert json input to placeholder type
+	if err := json.Unmarshal(bytes, &raw); err != nil {
+		return nil, err
+	}
+
+	// convert placeholder type to final type
+	level, err := zerolog.ParseLevel(raw.Level)
+	if err != nil {
+		return nil, err
+	}
+	log := &LogMessage{
+		Level:   level,
+		Time:    raw.Time,
+		Message: raw.Message,
+	}
+
+	return log, nil
 }
