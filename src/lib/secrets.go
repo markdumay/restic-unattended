@@ -219,7 +219,7 @@ func ListVariables(listAll bool) (l [][]string, e error) {
 }
 
 // StageEnv stages file-based Docker secrets and merges them with the environment variable of the current process
-// context. It return an error if required variables (or secrets) are missing, or if the secrets cannot be read.
+// context. It returns an error if the required variables (or secrets) are missing, or if the secrets cannot be read.
 // See InitSecretsFromEnv for more details about the processing of Docker secrets, and ValidatePrerequisites for
 // the tested prerequisites.
 func StageEnv() (vars []string, e error) {

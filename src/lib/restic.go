@@ -24,10 +24,10 @@ func (e *ResticError) Error() string {
 // Public Functions
 //======================================================================================================================
 
-// ExecuteCmd invokes an external command with the provided arguments and enviornment variables. Pending if log is true,
+// ExecuteCmd invokes an external command with the provided arguments and environment variables. Pending if log is true,
 // all output of the command (both stdout and stderr) is logged in real time. Otherwise, only errors are logged.
 func ExecuteCmd(env []string, log bool, command string, args ...string) error {
-	// initiate the restic subcommand with current environment and secrets
+	// initiate the command with current environment and secrets
 	cmd := exec.Command(command, args...)
 	cmd.Env = env
 
