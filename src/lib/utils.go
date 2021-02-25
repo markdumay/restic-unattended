@@ -41,6 +41,23 @@ func ReadLine(path string) (string, error) {
 	return scanner.Text(), nil
 }
 
+// WriteLine appends a line of text to a file. The file is created if it does not exist.
+func WriteLine(path string, line string) error {
+	// create or open the file
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+
+	// append a new line and close the file
+	defer file.Close()
+	if _, err := file.Write([]byte(line + "\n")); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // SourcePath returns the assumed main directory of the repository.
 func SourcePath() string {
 	if currentWorkingDirectory, err := os.Getwd(); err == nil {
