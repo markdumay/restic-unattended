@@ -136,22 +136,19 @@ func readSecret(path string) (string, error) {
 // Public Functions
 //======================================================================================================================
 
-// InitSecretsFromEnv returns an array of secrets in the form "key=value". Each supported secret, identified by the
-// suffix "_FILE", is read from a mounted file. This allows initialization of Docker secrets as regular environment
-// variables, restricted to the current process environment. Typically Docker secrets are mounted to the
-// /run/secrets path, but this is not a prerequisite. The keys of the returned secrets are converted to upper case.
+// InitSecrets returns an array of secrets in the form "key=value". Each supported secret, identified by the  suffix
+// "_FILE", is read from a mounted file. This allows initialization of Docker secrets as regular environment variables,
+// restricted to the current process environment. Typically Docker secrets are mounted to the /run/secrets path, but
+// this is not a prerequisite. The keys of the returned secrets are converted to upper case.
 //
 // For example, imagine the following environment variables is set:
 //
 // "B2_ACCOUNT_ID_FILE=/run/secrets/B2_ACCOUNT_ID"
 //
-// InitSecretsFromEnv reads the first line of the file /run/secrets/B2_ACCOUNT_ID and assigns it to a new variable
+// InitSecrets reads the first line of the file /run/secrets/B2_ACCOUNT_ID and assigns it to a new variable
 // B2_ACCOUNT_ID (note the "_FILE" suffix is stripped). See GetSupportedSecrets for an overview of all supported
 // environment variables.
-func InitSecretsFromEnv() (vars []string, err error) {
-	// retrieve all environment variables as key/value pair
-	env := getEnvMap()
-
+func InitSecrets(env map[string]string) (vars []string, err error) {
 	// filter for supported secrets
 	test := func(s string) bool {
 		supported := GetSupportedSecrets()
@@ -177,6 +174,11 @@ func InitSecretsFromEnv() (vars []string, err error) {
 	}
 
 	return secrets, nil
+}
+
+// InitSecretsFromEnv returns an array of secrets in the form "key=value". It is a wrapper for InitSecrets.
+func InitSecretsFromEnv() (vars []string, err error) {
+	return InitSecrets(getEnvMap())
 }
 
 // ListVariables returns a multi-dimensional array of environment variables, with three columns "Variable", "Set",
