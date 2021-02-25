@@ -142,11 +142,13 @@ func ParseFormat(formatStr string) (LogFormat, error) {
 
 // UnmarshalLog converts json bytes into a LogMessage instance.
 func UnmarshalLog(bytes []byte) (*LogMessage, error) {
+	const layout = "2006-01-02T15:04:05Z07:00"
+
 	// construct a placeholder with looser typing
 	raw := struct {
-		Level   string    `json:"level"`
-		Time    time.Time `json:"time"`
-		Message string    `json:"message"`
+		Level   string `json:"level"`
+		Time    string `json:"time"`
+		Message string `json:"message"`
 	}{}
 
 	// convert json input to placeholder type
@@ -154,14 +156,22 @@ func UnmarshalLog(bytes []byte) (*LogMessage, error) {
 		return nil, err
 	}
 
-	// convert placeholder type to final type
+	// convert input to typed timestamp, fail on error
+	timestamp, err := time.Parse(layout, raw.Time)
+	if err != nil {
+		return nil, fmt.Errorf("Cannot parse datetime format, got %s, want %s", raw.Time, layout)
+	}
+
+	// parse Level
 	level, err := zerolog.ParseLevel(raw.Level)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Cannot parse level: %s", raw.Level)
 	}
+
+	// convert placeholder type to final type
 	log := &LogMessage{
 		Level:   level,
-		Time:    raw.Time,
+		Time:    timestamp,
 		Message: raw.Message,
 	}
 
