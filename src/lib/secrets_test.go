@@ -117,7 +117,27 @@ func TestListVariables(t *testing.T) {
 		compareResults(t, "ListVariables (all)", list, varKeys)
 	}
 }
+
+func TestStageEnv(t *testing.T) {
+	// initialize test secrets and secrets manager
+	secrets := GetSupportedSecrets()
+	secretKeys := GetKeys(secrets, false)
+	m := NewSecretsManagerWithEnv(getMockEnvMap, t.TempDir())
+
+	// test listing of env variables
+	env, err := m.StageEnv()
+	if err != nil {
+		t.Errorf("StageEnv returned an error: %s.", err.Error())
 	} else {
-		compareLists(t, "ListVariables (all)", vars, overview)
+		results := make([]string, len(env))
+		for k := range env {
+			pair := strings.SplitN(env[k], "=", 2)
+			if pair[0] != pair[1] {
+				t.Errorf("StageEnv returned an unexpected value, got: %s, want: %s.", pair[1], pair[0])
+			}
+			results[k] = pair[0] + "_FILE" // add suffix to enable comparison with GetSupportedSecrets()
+		}
+		compareKeys(t, "StageEnv", results, secretKeys)
 	}
+}
 }
