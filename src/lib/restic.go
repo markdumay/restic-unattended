@@ -49,7 +49,8 @@ func ExecuteCmd(env []string, log bool, command string, args ...string) error {
 // ExecuteCmd for more details.
 func ExecuteResticCmd(log bool, subCmd string, args ...string) error {
 	// initialize the Docker secrets
-	env, err := StageEnv()
+	m := NewSecretsManager()
+	env, err := m.StageEnv()
 	if err != nil {
 		return err
 	}

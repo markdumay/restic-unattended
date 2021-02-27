@@ -58,7 +58,8 @@ func init() {
 // ListAll is set, all available variables are display, otherwise only the set variables are shown.
 func List() error {
 	// get overview of variables
-	overview, err := lib.ListVariables(ListAll)
+	m := lib.NewSecretsManager()
+	overview, err := m.ListVariables(ListAll)
 	if err != nil {
 		return &lib.ResticError{Err: err.Error(), Fatal: true}
 	}

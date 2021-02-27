@@ -12,6 +12,17 @@ import (
 	"github.com/imdario/mergo"
 )
 
+// EnvMap defines a function type to retrieve environment variables as key/value pairs in a map.
+type EnvMap func(folder string) map[string]string
+
+// SecretsManager reads and stages secrets from the current environment. It supports reading of file-based secrets too,
+// such as Docker secrets mounted to the /run/secrets path. By convention, file-based Docker secrets have a '_FILE'
+// suffix in their variable name.
+type SecretsManager struct {
+	getEnvMap EnvMap
+	folder    string
+}
+
 //======================================================================================================================
 // Constants
 //======================================================================================================================
@@ -117,7 +128,7 @@ func filter(t interface{}, test func(string) bool) (ret interface{}) {
 }
 
 // getEnvMap retrieves all environment variables as key/value pairs in a map. All keys are converted to upper case.
-func getEnvMap() map[string]string {
+func getEnvMap(folder string) map[string]string {
 	env := map[string]string{}
 	for _, e := range os.Environ() {
 		pair := strings.SplitN(e, "=", 2)
@@ -136,6 +147,17 @@ func readSecret(path string) (string, error) {
 // Public Functions
 //======================================================================================================================
 
+// NewSecretsManager creates a new secrets manager reading variables from the current environment.
+func NewSecretsManager() *SecretsManager {
+	return &SecretsManager{getEnvMap: getEnvMap}
+}
+
+// NewSecretsManagerWithEnv creates a new secrets manager reading variables by calling the env() function. The folder
+// argument is passed to the env() function for each call.
+func NewSecretsManagerWithEnv(env EnvMap, folder string) *SecretsManager {
+	return &SecretsManager{getEnvMap: env, folder: folder}
+}
+
 // InitSecrets returns an array of secrets in the form "key=value". Each supported secret, identified by the  suffix
 // "_FILE", is read from a mounted file. This allows initialization of Docker secrets as regular environment variables,
 // restricted to the current process environment. Typically Docker secrets are mounted to the /run/secrets path, but
@@ -148,7 +170,7 @@ func readSecret(path string) (string, error) {
 // InitSecrets reads the first line of the file /run/secrets/B2_ACCOUNT_ID and assigns it to a new variable
 // B2_ACCOUNT_ID (note the "_FILE" suffix is stripped). See GetSupportedSecrets for an overview of all supported
 // environment variables.
-func InitSecrets(env map[string]string) (vars []string, err error) {
+func (s *SecretsManager) InitSecrets() (vars []string, err error) {
 	// filter for supported secrets
 	test := func(s string) bool {
 		supported := GetSupportedSecrets()
@@ -157,6 +179,7 @@ func InitSecrets(env map[string]string) (vars []string, err error) {
 		}
 		return false
 	}
+	env := s.getEnvMap(s.folder)
 	filtered, ok := filter(env, test).(map[string]string)
 	if !ok {
 		return []string{}, errors.New("Secrets cannot be read")
@@ -176,16 +199,11 @@ func InitSecrets(env map[string]string) (vars []string, err error) {
 	return secrets, nil
 }
 
-// InitSecretsFromEnv returns an array of secrets in the form "key=value". It is a wrapper for InitSecrets.
-func InitSecretsFromEnv() (vars []string, err error) {
-	return InitSecrets(getEnvMap())
-}
-
 // ListVariables returns a multi-dimensional array of environment variables, with three columns "Variable", "Set",
 // and "Description" for each row. If listAll is set to true, all available variables are returned - both the
 // variables supported by restic by default, as well as the variables additionally supported by restic-unattended.
 // The variables are sorted alphabetically and do not include a header.
-func ListVariables(listAll bool) (l [][]string, e error) {
+func (s *SecretsManager) ListVariables(listAll bool) (l [][]string, e error) {
 	// retrieve all supported secrets and default variables sorted alphabetically
 	vars := GetSupportedSecrets()
 	if err := mergo.Merge(&vars, GetSupportedVariables()); err != nil {
@@ -198,7 +216,7 @@ func ListVariables(listAll bool) (l [][]string, e error) {
 	sort.Strings(keys)
 
 	// retrieve all environment variables as key/value pair
-	env := getEnvMap()
+	env := s.getEnvMap(s.folder)
 
 	// export columns "Variable", "Set", "Description" for each variable if set or asked to list all
 	list := [][]string{}
@@ -224,14 +242,14 @@ func ListVariables(listAll bool) (l [][]string, e error) {
 // context. It returns an error if the required variables (or secrets) are missing, or if the secrets cannot be read.
 // See InitSecretsFromEnv for more details about the processing of Docker secrets, and ValidatePrerequisites for
 // the tested prerequisites.
-func StageEnv() (vars []string, e error) {
+func (s *SecretsManager) StageEnv() (vars []string, e error) {
 	// validate required variables are set
-	if err := ValidatePrerequisites(); err != nil {
+	if err := s.ValidatePrerequisites(); err != nil {
 		return []string{}, err
 	}
 
 	// initialize the Docker secrets
-	secrets, err := InitSecretsFromEnv()
+	secrets, err := s.InitSecrets()
 	if err != nil {
 		return []string{}, err
 	}
@@ -257,9 +275,9 @@ func StageEnv() (vars []string, e error) {
 
 // ValidatePrerequisites validates if both the restic repository and password are set as environment variable. It
 // returns an error if either variable is missing, or no error otherwise.
-func ValidatePrerequisites() error {
+func (s *SecretsManager) ValidatePrerequisites() error {
 	// retrieve all environment variables as key/value pair
-	env := getEnvMap()
+	env := s.getEnvMap(s.folder)
 
 	// check setting of RESTIC_REPOSITORY and RESTIC_REPOSITORY_FILE
 	repository := false
