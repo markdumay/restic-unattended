@@ -28,26 +28,31 @@ func getMockEnvMap(folder string) map[string]string {
 		WriteLine(path, name)
 		env[secret] = path
 	}
+
 	return env
 }
 
-func compareLists(t *testing.T, test string, list1 map[string]string, list2 [][]string) {
-	if len(list1) != len(list2) {
-		t.Errorf("%s returned incorrect number of secrets, got: %d, want: %d.", test, len(list1), len(list2))
-	} else {
-		// sort the second list to prepare for binary search
-		results := make([]string, 0, len(list2))
-		for k := range list2 {
-			results = append(results, list2[k][0])
-		}
-		sort.Strings(results)
+func compareKeys(t *testing.T, test string, got []string, want []string) {
+	// confirm got and want have the same length
+	if len(got) != len(want) {
+		t.Errorf("%s returned incorrect number of keys, got: %d, want: %d.", test, len(got), len(want))
+		return
+	}
 
-		// perform a binary search for each expected secret
-		for k := range list1 {
-			if sort.SearchStrings(results, k) == len(list2) {
-				t.Errorf("%s has a missing secret: %s", test, k)
-			}
-		}
+	// validate got and want are equal
+	sort.Strings(got)
+	sort.Strings(want)
+	if !Equal(got, want) {
+		t.Errorf("%s is missing one or more keys", test)
+	}
+}
+
+func compareResults(t *testing.T, test string, got [][]string, want []string) {
+	result, err := GetColumn(got, 0)
+	if err != nil {
+		t.Errorf("%s returned an error: %s.", test, err.Error())
+	} else {
+		compareKeys(t, test, result, want)
 	}
 }
 
@@ -87,25 +92,31 @@ func TestInitSecrets(t *testing.T) {
 func TestListVariables(t *testing.T) {
 	// initialize list of test secrets, supported variables, and secrets manager
 	secrets := GetSupportedSecrets()
+	secretKeys := GetKeys(secrets, false)
 	vars := GetSupportedVariables()
 	if err := mergo.Merge(&vars, secrets); err != nil {
 		t.Errorf("ListVariables (all) could not retrieve variables, error: %s.", err.Error())
 		return
 	}
+	varKeys := GetKeys(vars, false)
 	m := NewSecretsManagerWithEnv(getMockEnvMap, t.TempDir())
 
 	// test listing of set variables
-	overview, err := m.ListVariables(false)
+	list, err := m.ListVariables(false)
 	if err != nil {
 		t.Errorf("ListVariables (set) returned an error: %s.", err.Error())
 	} else {
-		compareLists(t, "ListVariables (set)", secrets, overview)
+		compareResults(t, "ListVariables (set)", list, secretKeys)
 	}
 
 	// test listing of all variables
-	overview, err = m.ListVariables(true)
+	list, err = m.ListVariables(true)
 	if err != nil {
-		t.Errorf("ListVariables (all) returned an errors: %s.", err.Error())
+		t.Errorf("ListVariables (all) returned an error: %s.", err.Error())
+	} else {
+		compareResults(t, "ListVariables (all)", list, varKeys)
+	}
+}
 	} else {
 		compareLists(t, "ListVariables (all)", vars, overview)
 	}
