@@ -10,22 +10,36 @@ import (
 )
 
 //======================================================================================================================
-// Public Functions
+// Private Functions
 //======================================================================================================================
 
-func TestInitSecrets(t *testing.T) {
-	// create some file-based secrets and env variables for testing
+// getMockEnvMap creates file-based secrets and env variables for testing. The full list returned by
+// GetSupportedSecrets() is used. The secrets are created as temporary files, which get destroyed once the unit test
+// is finished. The function returns a map of key/value pairs of all created secrets.
+func getMockEnvMap(folder string) map[string]string {
 	secrets := GetSupportedSecrets()
 	env := map[string]string{}
 	for secret := range secrets {
 		name := strings.TrimSuffix(secret, "_FILE")
-		path := path.Join(t.TempDir(), name)
+		path := path.Join(folder, name)
 		WriteLine(path, name)
 		env[secret] = path
 	}
+	return env
+}
+
+
+//======================================================================================================================
+// Public Functions
+//======================================================================================================================
+
+func TestInitSecrets(t *testing.T) {
+	// initialize test secrets and secrets manager
+	secrets := GetSupportedSecrets()
+	m := NewSecretsManagerWithEnv(getMockEnvMap, t.TempDir())
 
 	// read the test secrets from files
-	vars, err := InitSecrets(env)
+	vars, err := m.InitSecrets()
 	if err != nil {
 		t.Errorf("InitSecrets returned an error: %s.", err.Error())
 		return
