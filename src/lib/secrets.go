@@ -238,10 +238,10 @@ func (s *SecretsManager) ListVariables(listAll bool) (l [][]string, e error) {
 	return list, nil
 }
 
-// StageEnv stages file-based Docker secrets and merges them with the environment variable of the current process
-// context. It returns an error if the required variables (or secrets) are missing, or if the secrets cannot be read.
-// See InitSecretsFromEnv for more details about the processing of Docker secrets, and ValidatePrerequisites for
-// the tested prerequisites.
+// StageEnv stages file-based Docker secrets and merges them with the environment variables of the current process
+// context. The resulting variables can be assigned to the environment of a command. It returns an error if the
+// required variables (or secrets) are missing, or if the secrets cannot be read. See InitSecretsFromEnv for more
+// details about the processing of Docker secrets, and ValidatePrerequisites for the tested prerequisites.
 func (s *SecretsManager) StageEnv() (vars []string, e error) {
 	// validate required variables are set
 	if err := s.ValidatePrerequisites(); err != nil {
@@ -254,7 +254,7 @@ func (s *SecretsManager) StageEnv() (vars []string, e error) {
 		return []string{}, err
 	}
 
-	// filter for non-supported secrets
+	// discard all environment variables referring to a file-based secret
 	test := func(s string) bool {
 		supported := GetSupportedSecrets()
 		if _, ok := supported[strings.ToUpper(s)]; ok {
@@ -262,15 +262,22 @@ func (s *SecretsManager) StageEnv() (vars []string, e error) {
 		}
 		return true
 	}
-	filtered, ok := filter(os.Environ(), test).([]string)
+
+	// retrieve all environment variables as key/value pair
+	env := s.getEnvMap(s.folder)
+	filtered, ok := filter(env, test).(map[string]string)
 	if !ok {
 		return []string{}, errors.New("Environment variables cannot be read")
 	}
 
 	// merge the secrets with filtered environment variables
-	filtered = append(filtered, secrets...)
+	results := []string{}
+	for k, v := range filtered {
+		results = append(results, k+"="+v)
+	}
+	results = append(results, secrets...)
 
-	return filtered, nil
+	return results, nil
 }
 
 // ValidatePrerequisites validates if both the restic repository and password are set as environment variable. It
