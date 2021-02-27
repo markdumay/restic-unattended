@@ -40,6 +40,22 @@ func getMockEnvMapWithVars(folder string) map[string]string {
 
 	return env
 }
+
+func getMockEnvMapWithPrerequisites(folder string) map[string]string {
+	env := map[string]string{}
+
+	switch folder {
+	case "FILE":
+		env["RESTIC_REPOSITORY_FILE"] = "RESTIC_REPOSITORY_FILE"
+		env["RESTIC_PASSWORD_FILE"] = "RESTIC_PASSWORD_FILE"
+	case "NO_FILE":
+		env["RESTIC_REPOSITORY"] = "RESTIC_REPOSITORY"
+		env["RESTIC_PASSWORD"] = "RESTIC_PASSWORD"
+	}
+
+	return env
+}
+
 func compareKeys(t *testing.T, test string, got []string, want []string) {
 	// confirm got and want have the same length
 	if len(got) != len(want) {
@@ -158,5 +174,25 @@ func TestStageEnv(t *testing.T) {
 	}
 	compareKeys(t, "StageEnv", results, secretKeys)
 }
-}
+
+func TestValidatePrerequisites(t *testing.T) {
+	var m *SecretsManager
+
+	m = NewSecretsManagerWithEnv(getMockEnvMapWithPrerequisites, "FILE")
+	err := m.ValidatePrerequisites()
+	if err != nil {
+		t.Errorf("ValidatePrerequisites returned an unexpected value, got: false, want: true.")
+	}
+
+	m = NewSecretsManagerWithEnv(getMockEnvMapWithPrerequisites, "NO_FILE")
+	err = m.ValidatePrerequisites()
+	if err != nil {
+		t.Errorf("ValidatePrerequisites returned an unexpected value, got: false, want: true.")
+	}
+
+	m = NewSecretsManagerWithEnv(getMockEnvMapWithPrerequisites, "")
+	err = m.ValidatePrerequisites()
+	if err == nil {
+		t.Errorf("ValidatePrerequisites returned an unexpected value, got: true, want: false.")
+	}
 }
