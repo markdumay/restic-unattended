@@ -5,13 +5,45 @@ package lib
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"path"
+	"sort"
 )
 
 //======================================================================================================================
 // Public Functions
 //======================================================================================================================
+
+// GetKeys retrieves the keys of a map using strings as key. If sortKeys is true, the result is sorted in ascending
+// order.
+func GetKeys(input map[string]string, sortKeys bool) []string {
+	// extract and sort keys of want
+	keys := make([]string, 0, len(input))
+	for k := range input {
+		keys = append(keys, k)
+	}
+
+	if sortKeys {
+		sort.Strings(keys)
+	}
+
+	return keys
+}
+
+// GetColumn returns the nth column from a multi-dimensional string array.
+func GetColumn(input [][]string, index int) (column []string, err error) {
+	if index < 0 || index > 1 {
+		return nil, fmt.Errorf("Invalid column index %d", index)
+	}
+
+	column = make([]string, 0)
+	for _, row := range input {
+		column = append(column, row[index])
+	}
+
+	return column, nil
+}
 
 // Equal tells whether a and b contain the same elements. A nil argument is equivalent to an empty slice.
 func Equal(a, b []string) bool {
