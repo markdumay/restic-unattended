@@ -32,6 +32,14 @@ func getMockEnvMap(folder string) map[string]string {
 	return env
 }
 
+func getMockEnvMapWithVars(folder string) map[string]string {
+	env := getMockEnvMap(folder)
+	env["CUSTOM1"] = "CUSTOM1"
+	env["CUSTOM2"] = "CUSTOM2"
+	env["CUSTOM3"] = "CUSTOM3"
+
+	return env
+}
 func compareKeys(t *testing.T, test string, got []string, want []string) {
 	// confirm got and want have the same length
 	if len(got) != len(want) {
@@ -119,25 +127,36 @@ func TestListVariables(t *testing.T) {
 }
 
 func TestStageEnv(t *testing.T) {
-	// initialize test secrets and secrets manager
+	// initialize test secrets, variables, and secrets manager
 	secrets := GetSupportedSecrets()
+	secrets["CUSTOM1"] = "CUSTOM1"
+	secrets["CUSTOM2"] = "CUSTOM2"
+	secrets["CUSTOM3"] = "CUSTOM3"
 	secretKeys := GetKeys(secrets, false)
-	m := NewSecretsManagerWithEnv(getMockEnvMap, t.TempDir())
+	m := NewSecretsManagerWithEnv(getMockEnvMapWithVars, t.TempDir())
 
 	// test listing of env variables
 	env, err := m.StageEnv()
 	if err != nil {
 		t.Errorf("StageEnv returned an error: %s.", err.Error())
-	} else {
-		results := make([]string, len(env))
-		for k := range env {
-			pair := strings.SplitN(env[k], "=", 2)
-			if pair[0] != pair[1] {
-				t.Errorf("StageEnv returned an unexpected value, got: %s, want: %s.", pair[1], pair[0])
-			}
-			results[k] = pair[0] + "_FILE" // add suffix to enable comparison with GetSupportedSecrets()
-		}
-		compareKeys(t, "StageEnv", results, secretKeys)
+		return
 	}
+
+	// test listing of env variables
+	results := make([]string, len(env))
+	for k := range env {
+		pair := strings.SplitN(env[k], "=", 2)
+		if pair[0] != pair[1] {
+			t.Errorf("StageEnv returned an unexpected value, got: %s, want: %s.", pair[1], pair[0])
+		}
+		// add suffix for secrets to enable comparison with GetSupportedSecrets()
+		if !strings.HasPrefix(pair[0], "CUSTOM") {
+			results[k] = pair[0] + "_FILE"
+		} else {
+			results[k] = pair[0]
+		}
+	}
+	compareKeys(t, "StageEnv", results, secretKeys)
+}
 }
 }
