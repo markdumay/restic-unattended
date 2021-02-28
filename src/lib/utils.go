@@ -15,6 +15,16 @@ import (
 // Public Functions
 //======================================================================================================================
 
+// Contains validates if a specific item exists within an array.
+func Contains(arr []string, item string) bool {
+	for _, a := range arr {
+		if a == item {
+			return true
+		}
+	}
+	return false
+}
+
 // GetKeys retrieves the keys of a map using strings as key. If sortKeys is true, the result is sorted in ascending
 // order.
 func GetKeys(input map[string]string, sortKeys bool) []string {
