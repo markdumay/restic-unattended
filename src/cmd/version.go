@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/markdumay/restic-unattended/lib"
 	"github.com/spf13/cobra"
@@ -57,7 +58,8 @@ func VersionInfo() string {
 	if BuildVersion != "" {
 		return BuildVersion
 	}
-	versionFile := lib.SourcePath() + "/VERSION"
+
+	versionFile := path.Join(lib.SourcePath(), "VERSION")
 	if _, err := os.Stat(versionFile); err == nil {
 		if version, err := lib.ReadLine(versionFile); err == nil {
 			return fmt.Sprintf("%s-src", version)
