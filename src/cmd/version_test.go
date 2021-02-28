@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path"
 	"testing"
 
 	"github.com/markdumay/restic-unattended/lib"
@@ -15,7 +16,7 @@ func TestVersionInfo(t *testing.T) {
 	versionInfo := VersionInfo()
 	var expectation string
 
-	versionFile := lib.SourcePath() + "/VERSION"
+	versionFile := path.Join(lib.SourcePath(), "VERSION")
 	if _, err := os.Stat(versionFile); err == nil {
 		if version, err := lib.ReadLine(versionFile); err == nil {
 			expectation = fmt.Sprintf("%s-src", version)
