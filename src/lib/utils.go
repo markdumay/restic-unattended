@@ -93,7 +93,7 @@ func WriteLine(path string, line string) error {
 // SourcePath returns the assumed main directory of the repository.
 func SourcePath() string {
 	if currentWorkingDirectory, err := os.Getwd(); err == nil {
-		if path.Base(currentWorkingDirectory) == "cmd" {
+		if path.Base(currentWorkingDirectory) == "cmd" || path.Base(currentWorkingDirectory) == "lib" {
 			return path.Clean(currentWorkingDirectory + "/../..")
 		} else if path.Base(currentWorkingDirectory) == "src" {
 			return path.Clean(currentWorkingDirectory + "/..")
