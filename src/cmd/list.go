@@ -4,11 +4,7 @@
 package cmd
 
 import (
-	"bufio"
-	"strings"
-
 	"github.com/markdumay/restic-unattended/lib"
-	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +29,10 @@ to the current process environment. Typically Docker secrets are mounted to the
 /run/secrets path, but this is not a prerequisite.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		f := func() error { return List() }
+		f := func() error {
+			m := lib.NewSecretsManager()
+			return m.List(ListAll)
+		}
 		lib.HandleCmd(f, "Error listing variables", false)
 	},
 }
@@ -47,51 +46,4 @@ to the current process environment. Typically Docker secrets are mounted to the
 func init() {
 	listCmd.Flags().BoolVarP(&ListAll, "all", "a", false, "Display all available variables")
 	rootCmd.AddCommand(listCmd)
-}
-
-//======================================================================================================================
-// Public Functions
-//======================================================================================================================
-
-// List displays an overview of all supported environment variables, both file-based secrets and variables supported by
-// restic by default. The list consists of the columns "Variable", "Set", and "Description" for each variable. If
-// ListAll is set, all available variables are display, otherwise only the set variables are shown.
-func List() error {
-	// get overview of variables
-	m := lib.NewSecretsManager()
-	overview, err := m.ListVariables(ListAll)
-	if err != nil {
-		return &lib.ResticError{Err: err.Error(), Fatal: true}
-	}
-
-	// render output using logger
-	if len(overview) < 1 {
-		lib.Logger.Info().Msg("No variables defined")
-	} else {
-		// render a simple aligned/padded ASCII table as string
-		tableString := &strings.Builder{}
-		table := tablewriter.NewWriter(tableString)
-		table.SetHeader([]string{"Variable", "Set", "Description"})
-		table.SetAutoWrapText(false)
-		table.SetAutoFormatHeaders(true)
-		table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-		table.SetAlignment(tablewriter.ALIGN_LEFT)
-		table.SetCenterSeparator("")
-		table.SetColumnSeparator("")
-		table.SetRowSeparator("")
-		table.SetHeaderLine(false)
-		table.SetBorder(false)
-		table.SetTablePadding("  ") // pad with spaces
-		table.SetNoWhiteSpace(true)
-		table.AppendBulk(overview) // add Bulk Data
-		table.Render()
-
-		// log each line of the rendered table using a scanner
-		scanner := bufio.NewScanner(strings.NewReader(tableString.String()))
-		for scanner.Scan() {
-			lib.Logger.Info().Msg(scanner.Text())
-		}
-	}
-
-	return nil
 }

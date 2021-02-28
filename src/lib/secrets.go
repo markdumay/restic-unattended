@@ -4,12 +4,14 @@
 package lib
 
 import (
+	"bufio"
 	"errors"
 	"os"
 	"sort"
 	"strings"
 
 	"github.com/imdario/mergo"
+	"github.com/olekukonko/tablewriter"
 )
 
 // EnvMap defines a function type to retrieve environment variables as key/value pairs in a map.
@@ -197,6 +199,48 @@ func (s *SecretsManager) InitSecrets() (vars []string, err error) {
 	}
 
 	return secrets, nil
+}
+
+// List displays an overview of all supported environment variables, both file-based secrets and variables supported by
+// restic by default. The list consists of the columns "Variable", "Set", and "Description" for each variable. If
+// ListAll is set, all available variables are display, otherwise only the set variables are shown.
+func (s *SecretsManager) List(listAll bool) error {
+	// get overview of variables
+	overview, err := s.ListVariables(listAll)
+	if err != nil {
+		return &ResticError{Err: err.Error(), Fatal: true}
+	}
+
+	// render output using logger
+	if len(overview) < 1 {
+		Logger.Info().Msg("No variables defined")
+	} else {
+		// render a simple aligned/padded ASCII table as string
+		tableString := &strings.Builder{}
+		table := tablewriter.NewWriter(tableString)
+		table.SetHeader([]string{"Variable", "Set", "Description"})
+		table.SetAutoWrapText(false)
+		table.SetAutoFormatHeaders(true)
+		table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
+		table.SetAlignment(tablewriter.ALIGN_LEFT)
+		table.SetCenterSeparator("")
+		table.SetColumnSeparator("")
+		table.SetRowSeparator("")
+		table.SetHeaderLine(false)
+		table.SetBorder(false)
+		table.SetTablePadding("  ") // pad with spaces
+		table.SetNoWhiteSpace(true)
+		table.AppendBulk(overview) // add Bulk Data
+		table.Render()
+
+		// log each line of the rendered table using a scanner
+		scanner := bufio.NewScanner(strings.NewReader(tableString.String()))
+		for scanner.Scan() {
+			Logger.Info().Msg(scanner.Text())
+		}
+	}
+
+	return nil
 }
 
 // ListVariables returns a multi-dimensional array of environment variables, with three columns "Variable", "Set",
