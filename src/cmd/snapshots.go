@@ -19,7 +19,10 @@ var snapshotsCmd = &cobra.Command{
 	Long: `
 The "snapshots" command lists all snapshots stored in the repository.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		f := func() error { return Snapshots() }
+		f := func() error {
+			r := lib.NewResticManager()
+			return r.Snapshots()
+		}
 		lib.HandleCmd(f, "Error retrieving snapshots", false)
 	},
 }
@@ -31,26 +34,4 @@ The "snapshots" command lists all snapshots stored in the repository.`,
 // init registers the snapshotsCmd with the rootCmd, which is managed by Cobra.
 func init() {
 	rootCmd.AddCommand(snapshotsCmd)
-}
-
-//======================================================================================================================
-// Public Functions
-//======================================================================================================================
-
-// Snapshots lists all snapshots stored in the repository.
-func Snapshots() error {
-	lib.Logger.Info().Msg("Listing snapshots")
-
-	// ensure the repository is unlocked
-	if err := lib.ExecuteResticCmd(false, "unlock"); err != nil {
-		return &lib.ResticError{Err: "Could not open repository", Fatal: true}
-	}
-
-	// execute the snapshots command
-	if err := lib.ExecuteResticCmd(true, "snapshots"); err != nil {
-		return &lib.ResticError{Err: "Could not list snapshots", Fatal: true}
-	}
-
-	lib.Logger.Info().Msgf("Finished listing snapshots")
-	return nil
 }

@@ -21,7 +21,10 @@ The "check" command tests the repository for errors and reports any errors it
 finds. By default, the "check" command will always load all data directly from the
 repository and not use a local cache.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		f := func() error { return Check() }
+		f := func() error {
+			r := lib.NewResticManager()
+			return r.Check()
+		}
 		lib.HandleCmd(f, "Error executing check", false)
 	},
 }
@@ -33,26 +36,4 @@ repository and not use a local cache.`,
 // init registers the snapshotsCmd with the rootCmd, which is managed by Cobra.
 func init() {
 	rootCmd.AddCommand(checkCmd)
-}
-
-//======================================================================================================================
-// Public Functions
-//======================================================================================================================
-
-// Check tests the repository for errors and reports any errors it finds.
-func Check() error {
-	lib.Logger.Info().Msg("Executing check")
-
-	// ensure the repository is unlocked
-	if err := lib.ExecuteResticCmd(false, "unlock"); err != nil {
-		return &lib.ResticError{Err: "Could not open repository", Fatal: true}
-	}
-
-	// execute the snapshots command
-	if err := lib.ExecuteResticCmd(true, "check"); err != nil {
-		return &lib.ResticError{Err: "Could not execute check", Fatal: true}
-	}
-
-	lib.Logger.Info().Msgf("Finished executing check")
-	return nil
 }

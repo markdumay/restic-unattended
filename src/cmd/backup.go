@@ -40,7 +40,10 @@ Backup connects to a previously initialized repository only, unless the flag
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		f := func() error { return Backup(BackupPath, InitRepository, Host) }
+		f := func() error {
+			r := lib.NewResticManager()
+			return r.Backup(BackupPath, InitRepository, Host)
+		}
 		lib.HandleCmd(f, "Error running backup", false)
 	},
 }
@@ -64,43 +67,4 @@ func addBackupOptions(c *cobra.Command) {
 func init() {
 	addBackupOptions(backupCmd)
 	rootCmd.AddCommand(backupCmd)
-}
-
-//======================================================================================================================
-// Public Functions
-//======================================================================================================================
-
-// Backup performs a backup of the provided backup path and stores it in a restic repository. It uses the environment
-// settings defined in lib.GetSupportedSecrets and lib.GetSupportedVariables.
-func Backup(path string, init bool, host string) error {
-	lib.Logger.Info().Msgf("Starting backup operation of path '%s'", path)
-
-	// check if the repository is already initialized and do so if instructed
-	if err := lib.ExecuteResticCmd(false, "snapshots"); err != nil {
-		if init {
-			lib.Logger.Info().Msg("Initializing repository for first use")
-			if err := lib.ExecuteResticCmd(true, "init"); err != nil {
-				return &lib.ResticError{Err: "Could not init repository", Fatal: true}
-			}
-		} else {
-			return &lib.ResticError{Err: "Could not open repository", Fatal: true}
-		}
-	}
-
-	// ensure the repository is unlocked
-	if err := lib.ExecuteResticCmd(false, "unlock"); err != nil {
-		return &lib.ResticError{Err: "Could not unlock repository", Fatal: true}
-	}
-
-	// execute the backup command
-	args := []string{path}
-	if host != "" {
-		args = append(args, "--host="+host)
-	}
-	if err := lib.ExecuteResticCmd(true, "backup", args...); err != nil {
-		return err
-	}
-
-	lib.Logger.Info().Msgf("Finished backup operation of path '%s'", path)
-	return nil
 }

@@ -4,12 +4,8 @@
 package cmd
 
 import (
-	"errors"
-	"regexp"
-
 	"github.com/markdumay/restic-unattended/lib"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 )
 
 //======================================================================================================================
@@ -33,7 +29,10 @@ restic-unattended forget --keep-daily 7
 Keep the most recent backup for each of the last 7 days
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		f := func() error { return Forget(cmd.Flags()) }
+		f := func() error {
+			r := lib.NewResticManager()
+			return r.Forget(cmd.Flags())
+		}
 		lib.HandleCmd(f, "Error running forget", false)
 	},
 }
@@ -67,59 +66,4 @@ func init() {
 	addKeepOptions(forgetCmd)
 	forgetCmd.Flags().SortFlags = false
 	rootCmd.AddCommand(forgetCmd)
-}
-
-//======================================================================================================================
-// Public Functions
-//======================================================================================================================
-
-// Forget executes the restic forget command. The '--prune' flag is added by default. Provided keep-* flags are relayed
-// to the restic binary. Any stale locks on the repository are removed first.
-func Forget(flags *pflag.FlagSet) error {
-	lib.Logger.Info().Msg("Starting forget operation")
-
-	// prepare forget args
-	var args = []string{"--prune"} // add --prune flag by default
-	re, err := regexp.Compile("^keep-")
-	if err != nil {
-		return &lib.ResticError{Err: "Could not parse forget arguments", Fatal: true}
-	}
-
-	var parseErr error
-	flags.Visit(func(flag *pflag.Flag) {
-		// stop processing additional flags if there was an error
-		if parseErr != nil {
-			return
-		}
-		// process keep-* flags
-		if re.MatchString(flag.Name) {
-			v, err := lib.GetCLIFlag(flags, flag)
-			if err != nil {
-				parseErr = err
-				return
-			}
-			args = append(args, v...)
-		}
-	})
-	if parseErr != nil {
-		return &lib.ResticError{Err: "Could not parse forget arguments", Fatal: true}
-	}
-
-	// check if the repository is already initialized
-	if err := lib.ExecuteResticCmd(false, "snapshots"); err != nil {
-		return &lib.ResticError{Err: "Could not open repository", Fatal: true}
-	}
-
-	// ensure the repository is unlocked
-	if err := lib.ExecuteResticCmd(false, "unlock"); err != nil {
-		return &lib.ResticError{Err: "Could not unlock repository", Fatal: true}
-	}
-
-	// execute the forget command
-	if err := lib.ExecuteResticCmd(true, "forget", args...); err != nil {
-		return errors.New("Could not complete forget operation")
-	}
-
-	lib.Logger.Info().Msgf("Finished forget operation")
-	return nil
 }

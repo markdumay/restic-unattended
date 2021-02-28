@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 	"os"
 
 	"github.com/markdumay/restic-unattended/lib"
@@ -40,7 +39,10 @@ Restores a backup stored in a restic repository to a local path.
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		f := func() error { return Restore(RestorePath, Snapshot) }
+		f := func() error {
+			r := lib.NewResticManager()
+			return r.Restore(RestorePath, Snapshot)
+		}
 		lib.HandleCmd(f, "Error running restore", false)
 	},
 }
@@ -54,30 +56,4 @@ func init() {
 	restoreCmd.Flags().StringVarP(&Snapshot, "snapshot", "", "latest",
 		"ID of the snapshot to restore")
 	rootCmd.AddCommand(restoreCmd)
-}
-
-//======================================================================================================================
-// Public Functions
-//======================================================================================================================
-
-// Restore retrieves a specific restic snapshot and restores it at the specified path.
-func Restore(path string, snapshot string) error {
-	lib.Logger.Info().Msgf("Starting restore operation for snapshot '%s'", snapshot)
-
-	// check if the repository is already initialized, fail if not available
-	if err := lib.ExecuteResticCmd(false, "snapshots"); err != nil {
-		return &lib.ResticError{Err: "Could not open repository", Fatal: true}
-	}
-
-	// ensure the repository is unlocked
-	if err := lib.ExecuteResticCmd(false, "unlock"); err != nil {
-		return &lib.ResticError{Err: "Could not unlock repository", Fatal: true}
-	}
-
-	if err := lib.ExecuteResticCmd(true, "restore", snapshot, "--target="+path); err != nil {
-		return &lib.ResticError{Err: fmt.Sprintf("Could not restore snapshot '%s'", snapshot), Fatal: true}
-	}
-
-	lib.Logger.Info().Msgf("Finished restore operation for snapshot '%s'", snapshot)
-	return nil
 }

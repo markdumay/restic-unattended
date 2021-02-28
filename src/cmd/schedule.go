@@ -102,7 +102,10 @@ Runs a scheduled backup once a week at midnight on Sunday.
 		return validateScheduleFlags(cmd.Flags())
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		f := func() error { return Schedule(BackupPath, InitRepository, Host, Sustained, cmd.Flags()) }
+		f := func() error {
+			r := lib.NewResticManager()
+			return r.Schedule(BackupCron, ForgetCron, BackupPath, InitRepository, Host, Sustained, cmd.Flags())
+		}
 		lib.HandleCmd(f, "Error running schedule command", true)
 	},
 }
@@ -140,34 +143,4 @@ func validateScheduleFlags(flags *pflag.FlagSet) error {
 	}
 
 	return nil
-}
-
-//======================================================================================================================
-// Public Functions
-//======================================================================================================================
-
-// Schedule starts the cron job following the provided BackupCron. If needed, the repository is initialized first. The
-// cron job runs indefinitely, unless interrupted (e.g. pressing Ctrl-C or sending SIGINT).
-func Schedule(path string, init bool, host string, sustain bool, keepFlags *pflag.FlagSet) error {
-	lib.Logger.Info().Msg("Executing schedule command")
-
-	var jobs []lib.Job
-
-	if BackupCron != "" {
-		var backup lib.Job
-		backup.Tag = "backup"
-		backup.Spec = BackupCron
-		backup.RunE = func() error { return Backup(path, init, host) }
-		jobs = append(jobs, backup)
-	}
-
-	if ForgetCron != "" {
-		var forget lib.Job
-		forget.Tag = "forget"
-		forget.Spec = ForgetCron
-		forget.RunE = func() error { return Forget(keepFlags) }
-		jobs = append(jobs, forget)
-	}
-
-	return lib.RunCronJobs(jobs, !sustain)
 }
