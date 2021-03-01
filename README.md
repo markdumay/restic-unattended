@@ -12,6 +12,7 @@
     <a href="https://github.com/markdumay/restic-unattended/actions/workflows/buildtestlint.yml" alt="Build, Test, and Lint">
         <img src="https://github.com/markdumay/restic-unattended/actions/workflows/buildtestlint.yml/badge.svg" />
     </a>
+    <a href="https://github.com/markdumay/restic-unattended/commits/main" alt="Last commit">
         <img src="https://img.shields.io/github/last-commit/markdumay/restic-unattended.svg" />
     </a>
     <a href="https://github.com/markdumay/restic-unattended/issues" alt="Issues">
@@ -20,7 +21,7 @@
     <a href="https://github.com/markdumay/restic-unattended/pulls" alt="Pulls">
         <img src="https://img.shields.io/github/issues-pr-raw/markdumay/restic-unattended.svg" />
     </a>
-    <a href="https://github.com/markdumay/restic-unattended/blob/master/LICENSE" alt="License">
+    <a href="https://github.com/markdumay/restic-unattended/blob/main/LICENSE" alt="License">
         <img src="https://img.shields.io/github/license/markdumay/restic-unattended.svg" />
     </a>
 </p>
@@ -701,7 +702,7 @@ The scheduler routine of *restic-unattended* is inspired by the following blog a
 <a href="https://www.buymeacoffee.com/markdumay" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/lato-orange.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;"></a>
 
 ## License
-<a href="https://github.com/markdumay/restic-unattended/blob/master/LICENSE" alt="License">
+<a href="https://github.com/markdumay/restic-unattended/blob/main/LICENSE" alt="License">
     <img src="https://img.shields.io/github/license/markdumay/restic-unattended.svg" />
 </a>
 
