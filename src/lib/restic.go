@@ -16,6 +16,7 @@ import (
 // ResticManager manages the invocation of the external binary restic.
 type ResticManager struct {
 	cmd string
+	env []string
 }
 
 // ResticError defines a custom error for failed execution of restic commands.
@@ -67,13 +68,20 @@ func HandleCmd(cmd func() error, errMsg string, alwaysFatal bool) {
 }
 
 // NewResticManager creates a new restic manager.
-func NewResticManager() *ResticManager {
-	return &ResticManager{cmd: "restic"}
+func NewResticManager() (*ResticManager, error) {
+	// initialize the Docker secrets
+	m := NewSecretsManager()
+	env, err := m.StageEnv()
+	if err != nil {
+		return nil, err
+	}
+
+	return &ResticManager{cmd: "restic", env: env}, nil
 }
 
-// NewResticManagerWithCmd creates a new restic manager with a specific command to invoke.
-func NewResticManagerWithCmd(cmd string) *ResticManager {
-	return &ResticManager{cmd: cmd}
+// NewResticManagerWithContext creates a new restic manager with a specific command to invoke.
+func NewResticManagerWithContext(cmd string, env []string) *ResticManager {
+	return &ResticManager{cmd: cmd, env: env}
 }
 
 // Backup performs a backup of the provided backup path and stores it in a restic repository. It uses the environment
@@ -132,17 +140,10 @@ func (r *ResticManager) Check() error {
 // Execute invokes an external binary with a specific subcommand. It stages any Docker secrets as environment variables
 // first. The output of the command (both stdout and stderr) is logged in real time. See executeCmd for more details.
 func (r *ResticManager) Execute(log bool, subCmd string, args ...string) error {
-	// initialize the Docker secrets
-	m := NewSecretsManager()
-	env, err := m.StageEnv()
-	if err != nil {
-		return err
-	}
-
 	// initiate the restic command with current environment and secrets
 	resticArgs := []string{subCmd}
 	resticArgs = append(resticArgs, args...)
-	return ExecuteCmd(env, log, r.cmd, resticArgs...)
+	return ExecuteCmd(r.env, log, r.cmd, resticArgs...)
 }
 
 // Forget executes the restic forget command. The '--prune' flag is added by default. Provided keep-* flags are relayed
