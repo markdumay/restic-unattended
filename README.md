@@ -9,7 +9,7 @@
 <!-- Badges -->
 <p align="center">
     <a href="https://github.com/markdumay/restic-unattended/actions/workflows/build-test.yml" alt="Build">
-        <img src="https://img.shields.io/github/workflow/status/markdumay/restic-unattended/build-test" />
+        <img src="https://img.shields.io/github/workflow/status/markdumay/restic-unattended/build.svg" />
     </a>
     <a href="https://github.com/markdumay/restic-unattended/commits/main" alt="Last commit">
         <img src="https://img.shields.io/github/last-commit/markdumay/restic-unattended.svg" />
