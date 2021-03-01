@@ -4,7 +4,6 @@
 package lib
 
 import (
-	"fmt"
 	"path"
 	"strings"
 	"testing"
