@@ -109,7 +109,6 @@ func isValidTimestamp(t *testing.T, input interface{}, expected time.Time, loggi
 //======================================================================================================================
 
 func TestInitLogger(t *testing.T) {
-	const layout = "2006-01-02T15:04:05Z07:00"
 	var buffer LogBuffer
 	table := []struct {
 		level   zerolog.Level

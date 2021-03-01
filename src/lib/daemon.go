@@ -121,8 +121,8 @@ func IsValidCron(spec string) error {
 }
 
 // RunCron schedules one job according to a cron specification. It is a wrapper for RunCronJobs.
-func RunCron(job Job, haltOnError bool) {
-	RunCronJobs([]Job{job}, haltOnError)
+func RunCron(job Job, haltOnError bool) error {
+	return RunCronJobs([]Job{job}, haltOnError)
 }
 
 // RunCronJobs schedules one or more jobs according to a cron specification. The specification supports default cron

@@ -81,8 +81,12 @@ func init() {
 		"Log format to use: default, pretty, json")
 
 	// bind loglevel and logformat to environment variables via viper
-	viper.BindPFlag("loglevel", rootCmd.PersistentFlags().Lookup("loglevel"))
-	viper.BindPFlag("logformat", rootCmd.PersistentFlags().Lookup("logformat"))
+	if err := viper.BindPFlag("loglevel", rootCmd.PersistentFlags().Lookup("loglevel")); err != nil {
+		lib.Logger.Fatal().Err(err).Msg("Could not bind loglevel")
+	}
+	if err := viper.BindPFlag("logformat", rootCmd.PersistentFlags().Lookup("logformat")); err != nil {
+		lib.Logger.Fatal().Err(err).Msg("Could not bind logformat")
+	}
 }
 
 // initConfig reads in config file and ENV variables if set.

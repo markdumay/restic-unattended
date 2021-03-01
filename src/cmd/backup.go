@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/markdumay/restic-unattended/lib"
 	"github.com/spf13/cobra"
@@ -55,19 +56,28 @@ Backup connects to a previously initialized repository only, unless the flag
 // Private Functions
 //======================================================================================================================
 
-func addBackupOptions(c *cobra.Command) {
+func addBackupOptions(c *cobra.Command) error {
 	f := c.Flags()
 	f.BoolVar(&InitRepository, "init", false, "initialize the repository if it does not exist yet")
 	f.StringVarP(&BackupPath, "path", "p", "", "local path to backup")
-	viper.BindPFlag("backup_path", f.Lookup("path")) // bind backup path to environment variables
+	// bind backup path to environment variables
+	if err := viper.BindPFlag("backup_path", f.Lookup("path")); err != nil {
+		return fmt.Errorf("Could not bind backup_path flag")
+	}
 	BackupPath = viper.GetString("backup_path")
 	f.StringVarP(&Host, "host", "H", "", "hostname to use in backups (defaults to $HOSTNAME)")
-	viper.BindPFlag("host", f.Lookup("host")) // bind backup path to environment variables
+	// bind host to environment variables
+	if err := viper.BindPFlag("host", f.Lookup("host")); err != nil {
+		return fmt.Errorf("Could not bind host flag")
+	}
 	Host = viper.GetString("host")
+	return nil
 }
 
 // init registers the backupCmd with the rootCmd, which is managed by Cobra.
 func init() {
-	addBackupOptions(backupCmd)
+	if err := addBackupOptions(backupCmd); err != nil {
+		lib.Logger.Fatal().Err(err).Msg("Could not initialize backup options")
+	}
 	rootCmd.AddCommand(backupCmd)
 }

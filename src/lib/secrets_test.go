@@ -25,8 +25,9 @@ func getMockEnvMap(folder string) map[string]string {
 	for secret := range secrets {
 		name := strings.TrimSuffix(secret, "_FILE")
 		path := path.Join(folder, name)
-		WriteLine(path, name)
-		env[secret] = path
+		if err := WriteLine(path, name); err == nil {
+			env[secret] = path
+		}
 	}
 
 	return env

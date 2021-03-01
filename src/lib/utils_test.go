@@ -98,7 +98,10 @@ func TestEqual(t *testing.T) {
 
 func TestReadLine(t *testing.T) {
 	path := path.Join(t.TempDir(), "test")
-	WriteLine(path, test1)
+	if err := WriteLine(path, test1); err != nil {
+		t.Errorf("ReadLine returned an error: %s", err.Error())
+		return
+	}
 	result1, err := ReadLine(path)
 	if err != nil {
 		t.Errorf("ReadLine returned an error: %s", err.Error())
@@ -107,8 +110,12 @@ func TestReadLine(t *testing.T) {
 		t.Errorf("ReadLine returned unexpected result, got: %s, want: %s", result1, test1)
 	}
 
-	WriteLine(path, test2)
-	WriteLine(path, test3)
+	if err := WriteLine(path, test2); err != nil {
+		t.Errorf("ReadLine returned an error: %s", err.Error())
+	}
+	if err := WriteLine(path, test3); err != nil {
+		t.Errorf("ReadLine returned an error: %s", err.Error())
+	}
 	result3, err := ReadLine(path)
 	if err != nil {
 		t.Errorf("ReadLine returned an error: %s", err.Error())
@@ -121,9 +128,15 @@ func TestReadLine(t *testing.T) {
 func TestWriteLine(t *testing.T) {
 	path := path.Join(t.TempDir(), "test")
 
-	WriteLine(path, test1)
-	WriteLine(path, test2)
-	WriteLine(path, test3)
+	if err := WriteLine(path, test1); err != nil {
+		t.Errorf("WriteLine returned an error: %s", err.Error())
+	}
+	if err := WriteLine(path, test2); err != nil {
+		t.Errorf("ReadLine returned an error: %s", err.Error())
+	}
+	if err := WriteLine(path, test3); err != nil {
+		t.Errorf("ReadLine returned an error: %s", err.Error())
+	}
 
 	expected := fmt.Sprintf("%s\n%s\n%s\n", test1, test2, test3)
 	data, err := ioutil.ReadFile(path)

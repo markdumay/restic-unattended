@@ -126,7 +126,9 @@ func init() {
 	scheduleCmd.Flags().StringVar(&ForgetCron, "forget", "", "remove old snapshots according to rotation schedule.")
 	scheduleCmd.Flags().BoolVar(&Sustained, "sustained", false, "sustain processing of scheduled jobs despite errors")
 
-	addBackupOptions(scheduleCmd)
+	if err := addBackupOptions(scheduleCmd); err != nil {
+		lib.Logger.Fatal().Err(err).Msg("Could not init backup options")
+	}
 	addKeepOptions(scheduleCmd)
 	rootCmd.AddCommand(scheduleCmd)
 }
