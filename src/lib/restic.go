@@ -35,6 +35,7 @@ func (e *ResticError) Error() string {
 // all output of the command (both stdout and stderr) is logged in real time. Otherwise, only errors are logged.
 func ExecuteCmd(env []string, log bool, command string, args ...string) error {
 	// initiate the command with current environment and secrets
+	Logger.Debug().Msgf("Executing command: %s %s", command, args)
 	cmd := exec.Command(command, args...)
 	cmd.Env = env
 
