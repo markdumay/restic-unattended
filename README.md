@@ -9,8 +9,8 @@
 
 <!-- Badges -->
 <p align="center">
-    <a href="https://github.com/markdumay/restic-unattended/actions/workflows/buildtestlint.yml" alt="build">
-        <img src="https://github.com/markdumay/restic-unattended/actions/workflows/buildtestlint.yml/badge.svg" />
+    <a href="https://github.com/markdumay/restic-unattended/actions/workflows/build-test-lint.yml" alt="Build">
+        <img src="https://img.shields.io/github/workflow/status/markdumay/restic-unattended/build-test-lint" />
     </a>
     <a href="https://github.com/markdumay/restic-unattended/commits/main" alt="Last commit">
         <img src="https://img.shields.io/github/last-commit/markdumay/restic-unattended.svg" />
