@@ -22,7 +22,10 @@ finds. By default, the "check" command will always load all data directly from t
 repository and not use a local cache.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		f := func() error {
-			r := lib.NewResticManager()
+			r, err := lib.NewResticManager()
+			if err != nil {
+				return err
+			}
 			return r.Check()
 		}
 		lib.HandleCmd(f, "Error executing check", false)

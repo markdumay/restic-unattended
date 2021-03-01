@@ -30,8 +30,10 @@ Keep the most recent backup for each of the last 7 days
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		f := func() error {
-			r := lib.NewResticManager()
-			return r.Forget(cmd.Flags())
+			r, err := lib.NewResticManager()
+			if err != nil {
+				return err
+			}
 		}
 		lib.HandleCmd(f, "Error running forget", false)
 	},

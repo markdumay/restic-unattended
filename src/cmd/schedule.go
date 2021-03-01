@@ -103,8 +103,10 @@ Runs a scheduled backup once a week at midnight on Sunday.
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		f := func() error {
-			r := lib.NewResticManager()
-			return r.Schedule(BackupCron, ForgetCron, BackupPath, InitRepository, Host, Sustained, cmd.Flags())
+			r, err := lib.NewResticManager()
+			if err != nil {
+				return err
+			}
 		}
 		lib.HandleCmd(f, "Error running schedule command", true)
 	},

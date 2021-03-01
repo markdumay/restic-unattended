@@ -20,7 +20,10 @@ var snapshotsCmd = &cobra.Command{
 The "snapshots" command lists all snapshots stored in the repository.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		f := func() error {
-			r := lib.NewResticManager()
+			r, err := lib.NewResticManager()
+			if err != nil {
+				return err
+			}
 			return r.Snapshots()
 		}
 		lib.HandleCmd(f, "Error retrieving snapshots", false)

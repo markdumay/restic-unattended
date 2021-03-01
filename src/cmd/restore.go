@@ -40,7 +40,10 @@ Restores a backup stored in a restic repository to a local path.
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		f := func() error {
-			r := lib.NewResticManager()
+			r, err := lib.NewResticManager()
+			if err != nil {
+				return err
+			}
 			return r.Restore(RestorePath, Snapshot)
 		}
 		lib.HandleCmd(f, "Error running restore", false)

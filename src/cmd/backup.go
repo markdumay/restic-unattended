@@ -41,7 +41,10 @@ Backup connects to a previously initialized repository only, unless the flag
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		f := func() error {
-			r := lib.NewResticManager()
+			r, err := lib.NewResticManager()
+			if err != nil {
+				return err
+			}
 			return r.Backup(BackupPath, InitRepository, Host)
 		}
 		lib.HandleCmd(f, "Error running backup", false)
