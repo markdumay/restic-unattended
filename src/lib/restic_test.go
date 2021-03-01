@@ -92,9 +92,10 @@ func TestExecuteCmd(t *testing.T) {
 
 	// validate env
 	for i := 1; i <= len(env); i++ {
-		want := fmt.Sprintf(`export ENV%d="ENV%d"`, i, i)
-		if !Contains(buffer, want) {
-			t.Errorf("ExecuteCmd did not return expected environment variable: %s.", want)
+		want1 := fmt.Sprintf(`export ENV%d="ENV%d"`, i, i) // macOS uses quoted variables by default
+		want2 := fmt.Sprintf("export ENV%d=ENV%d", i, i)   // ubuntu uses unquoted variables by default
+		if !Contains(buffer, want1) && !Contains(buffer, want2) {
+			t.Errorf("ExecuteCmd did not return expected environment variable: %s.", want2)
 		}
 	}
 }
