@@ -107,6 +107,11 @@ Runs a scheduled backup once a week at midnight on Sunday.
 			if err != nil {
 				return err
 			}
+			args, err := lib.ParseArgs(cmd.Flags(), "^keep-")
+			if err != nil {
+				return err
+			}
+			return r.Schedule(BackupCron, ForgetCron, BackupPath, InitRepository, Host, Sustained, args)
 		}
 		lib.HandleCmd(f, "Error running schedule command", true)
 	},

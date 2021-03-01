@@ -7,10 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
-	"regexp"
 
 	"github.com/rs/zerolog"
-	"github.com/spf13/pflag"
 )
 
 // ResticManager manages the invocation of the external binary restic.
@@ -148,35 +146,8 @@ func (r *ResticManager) Execute(log bool, subCmd string, args ...string) error {
 
 // Forget executes the restic forget command. The '--prune' flag is added by default. Provided keep-* flags are relayed
 // to the restic binary. Any stale locks on the repository are removed first.
-func (r *ResticManager) Forget(flags *pflag.FlagSet) error {
+func (r *ResticManager) Forget(args []string) error {
 	Logger.Info().Msg("Starting forget operation")
-
-	// prepare forget args
-	var args = []string{"--prune"} // add --prune flag by default
-	re, err := regexp.Compile("^keep-")
-	if err != nil {
-		return &ResticError{Err: "Could not parse forget arguments", Fatal: true}
-	}
-
-	var parseErr error
-	flags.Visit(func(flag *pflag.Flag) {
-		// stop processing additional flags if there was an error
-		if parseErr != nil {
-			return
-		}
-		// process keep-* flags
-		if re.MatchString(flag.Name) {
-			v, err := GetCLIFlag(flags, flag)
-			if err != nil {
-				parseErr = err
-				return
-			}
-			args = append(args, v...)
-		}
-	})
-	if parseErr != nil {
-		return &ResticError{Err: "Could not parse forget arguments", Fatal: true}
-	}
 
 	// check if the repository is already initialized
 	if err := r.Execute(false, "snapshots"); err != nil {
@@ -189,6 +160,7 @@ func (r *ResticManager) Forget(flags *pflag.FlagSet) error {
 	}
 
 	// execute the forget command
+	args = append(args, "--prune") // add --prune flag by default
 	if err := r.Execute(true, "forget", args...); err != nil {
 		return errors.New("Could not complete forget operation")
 	}
@@ -222,7 +194,7 @@ func (r *ResticManager) Restore(path string, snapshot string) error {
 // Schedule starts the cron job following the provided BackupCron. If needed, the repository is initialized first. The
 // cron job runs indefinitely, unless interrupted (e.g. pressing Ctrl-C or sending SIGINT).
 func (r *ResticManager) Schedule(backupCron string, forgetCron, path string, init bool, host string, sustain bool,
-	keepFlags *pflag.FlagSet) error {
+	keepFlags []string) error {
 
 	Logger.Info().Msg("Executing schedule command")
 

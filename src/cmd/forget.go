@@ -34,6 +34,11 @@ Keep the most recent backup for each of the last 7 days
 			if err != nil {
 				return err
 			}
+			args, err := lib.ParseArgs(cmd.Flags(), "^keep-")
+			if err != nil {
+				return err
+			}
+			return r.Forget(args)
 		}
 		lib.HandleCmd(f, "Error running forget", false)
 	},
