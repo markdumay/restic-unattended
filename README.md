@@ -6,7 +6,6 @@
     <br />
 </p>
 
-
 <!-- Badges -->
 <p align="center">
     <a href="https://github.com/markdumay/restic-unattended/actions/workflows/build-test.yml" alt="Build">
