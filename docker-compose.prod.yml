@@ -27,16 +27,16 @@ services:
       - RESTIC_TIMESTAMP=${RESTIC_TIMESTAMP}
     command: "${RESTIC_CMD}"
 
-    # deploy:
-    #   restart_policy:
-    #     condition: on-failure
-    #     delay: 30s
-    #     max_attempts: 5
-    #     window: 120s
-    #   resources:
-    #     limits:
-    #       cpus: "${NGINX_LIMIT_CPU}"
-    #       memory: "${NGINX_LIMIT_MEM}"
-    #     reservations:
-    #       cpus: "${NGINX_RESERVATION_CPU}"
-    #       memory: "${NGINX_RESERVATION_MEM}"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 5
+        window: 120s
+      resources:
+        limits:
+          cpus: "${RESTIC_LIMIT_CPU}"
+          memory: "${RESTIC_LIMIT_MEM}"
+        reservations:
+          cpus: "${RESTIC_RESERVATION_CPU}"
+          memory: "${RESTIC_RESERVATION_MEM}"
