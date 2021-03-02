@@ -1,4 +1,4 @@
-# restic-unattended (work in progress)
+# restic-unattended
 
 <!-- Tagline -->
 <p align="center">
