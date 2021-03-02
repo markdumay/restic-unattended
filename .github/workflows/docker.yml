@@ -17,3 +17,6 @@ jobs:
       
       - name: Build a development image
         run: ./dbm/dbm.sh dev build
+
+      - name: Build a production image
+        run: ./dbm/dbm.sh prod build
