@@ -1,4 +1,7 @@
 secrets:
+  RESTIC_REPOSITORY:
+    file: secrets/RESTIC_REPOSITORY
+    external: false
   RESTIC_PASSWORD:
     file: secrets/RESTIC_PASSWORD
     external: false
