@@ -16,11 +16,11 @@ secrets:
   RESTIC_REPOSITORY:
     external: true
   RESTIC_PASSWORD:
-    file: secrets/RESTIC_PASSWORD
+    external: true
   B2_ACCOUNT_ID:
-    file: secrets/B2_ACCOUNT_ID
+    external: true
   B2_ACCOUNT_KEY:
-    file: secrets/B2_ACCOUNT_KEY
+    external: true
 
 services:
   restic:
