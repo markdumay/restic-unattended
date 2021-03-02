@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+        with:
+          submodules: recursive
+      
       - name: Build a development image
         run: ./dbm/dbm.sh dev build
