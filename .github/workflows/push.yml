@@ -29,3 +29,6 @@ jobs:
 
       - name: Build and push development images
         run: ./dbm/dbm.sh dev build --push
+
+      - name: Build and push production images
+        run: ./dbm/dbm.sh prod build --push
