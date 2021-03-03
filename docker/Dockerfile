@@ -9,8 +9,6 @@ ARG BUILD_GID=1001
 ARG BUILD_USER='restic'
 ARG BUILD_FLAGS=''
 ARG BUILD_VERSION
-ARG BUILD_OS='linux'
-ARG BUILD_ARCH='amd64'
 ARG BUILD_TARGET='test'
 ARG GOLANG_VERSION
 ARG RESTIC_VERSION
@@ -21,15 +19,20 @@ ARG RESTIC_VERSION
 FROM golang:"${GOLANG_VERSION?version}" AS builder
 
 # Compile restic-unattended binary from source for targeted OS and architectue
-ARG BUILD_ARCH
-ARG BUILD_OS
+# Note: TARGETOS and TARGETARCH are only set automatically when using BuildKit
+ARG TARGETOS
+ARG TARGETARCH
+ENV TARGETOS "${TARGETOS}"
+ENV TARGETARCH "${TARGETARCH}"
 ARG BUILD_VERSION
 COPY ./src /app/src/restic-unattended
 WORKDIR /app/src/restic-unattended
 RUN set -eu; \
+    [ -z "${TARGETOS}" ] && export TARGETOS=$(go env GOOS); \
+    [ -z "${TARGETARCH}" ] && export TARGETARCH=$(go env GOARCH); \
     mkdir -p /app/bin; \
     go get -d -v ; \
-    CGO_ENABLED=0 GOOS="${BUILD_OS}" GOARCH="${BUILD_ARCH}" go build \
+    CGO_ENABLED=0 GOOS="${TARGETOS}" GOARCH="${TARGETARCH}" go build \
         -ldflags="-w -s -X main.BuildVersion=${BUILD_VERSION}" -o /app/src/restic-unattended; \
     mv /app/src/restic-unattended/restic-unattended /app/bin/
 
