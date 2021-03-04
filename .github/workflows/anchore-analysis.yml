@@ -19,11 +19,6 @@ jobs:
       - name: Setup environment variables
         run: mv sample.env .env
 
-      - name: Set the value
-        id: step_one
-        run: |
-          echo "RESTIC_CMD=restic-unattended check" >> $GITHUB_ENV
-
       - name: Build a production image
         run: ./dbm/dbm.sh prod build
 #         run: ./dbm/dbm.sh prod build --tag markdumay/restic-unattended:latest
