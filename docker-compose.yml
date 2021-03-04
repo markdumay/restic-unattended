@@ -25,6 +25,7 @@ secrets:
 services:
   restic:
     image: "markdumay/restic-unattended:${BUILD_VERSION:?version}${IMAGE_SUFFIX:-}"
+    container_name: "restic-unattended_restic"
     restart: unless-stopped
     networks:
       - restic

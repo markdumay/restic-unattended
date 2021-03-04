@@ -24,6 +24,7 @@ services:
         BUILD_USER: "${BUILD_USER}"
         BUILD_FLAGS: --add-shell
         BUILD_TARGET: test
+        ALPINE_VERSION: "${ALPINE_VERSION}"
         GOLANG_VERSION: "${GOLANG_VERSION}"
         RESTIC_VERSION: "${RESTIC_VERSION}"
     command: ["/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait"]
