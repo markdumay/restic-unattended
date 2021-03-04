@@ -13,6 +13,7 @@ services:
         BUILD_USER: "${BUILD_USER}"
         BUILD_FLAGS: --add-shell --read-only
         BUILD_TARGET: production
+        ALPINE_VERSION: "${ALPINE_VERSION}"
         GOLANG_VERSION: "${GOLANG_VERSION}"
         RESTIC_VERSION: "${RESTIC_VERSION}"
     read_only: true
