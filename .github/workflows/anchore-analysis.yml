@@ -1,23 +1,31 @@
 name: Anchore Container Scan
-on: push
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
-  Anchore-Build-Scan:
+  scan:
     runs-on: ubuntu-20.04
+
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
       
       - name: Build a production image
-        run: ./dbm/dbm.sh prod build --tag markdumay/restic-unattended:latest
+        run: ./dbm/dbm.sh prod build
+#         run: ./dbm/dbm.sh prod build --tag markdumay/restic-unattended:latest
 
-      - name: Run the Anchore scan action
-        uses: anchore/scan-action@main
-        with:
-          image: "markdumay/restic-unattended:latest"
-          acs-report-enable: true
+#       - name: Run the Anchore scan action
+#         uses: anchore/scan-action@main
+#         with:
+#           image: "markdumay/restic-unattended:latest"
+#           acs-report-enable: true
 
-      - name: Upload Anchore Scan Report
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: results.sarif
+#       - name: Upload Anchore Scan Report
+#         uses: github/codeql-action/upload-sarif@v1
+#         with:
+#           sarif_file: results.sarif
