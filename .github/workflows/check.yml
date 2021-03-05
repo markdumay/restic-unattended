@@ -1,0 +1,17 @@
+name: check
+
+on:
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  push:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Check for image upgrades
+        run: ./dbm/dbm.sh check
