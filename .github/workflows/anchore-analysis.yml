@@ -16,7 +16,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Setup environment variables
+      - name: Set up environment variables
         run: mv sample.env .env
 
       - name: Build a production image
