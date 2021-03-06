@@ -14,6 +14,9 @@
     <a href="https://github.com/markdumay/restic-unattended/actions/workflows/push.yml" alt="Docker Hub">
         <img src="https://img.shields.io/github/workflow/status/markdumay/restic-unattended/push.svg?label=docker" />
     </a>
+    <a href="https://www.codefactor.io/repository/github/markdumay/restic-unattended" alt="CodeFactor">
+        <img src="https://img.shields.io/codefactor/grade/github/markdumay/restic-unattended" />
+    </a>
     <a href="https://github.com/markdumay/restic-unattended/commits/main" alt="Last commit">
         <img src="https://img.shields.io/github/last-commit/markdumay/restic-unattended.svg" />
     </a>
