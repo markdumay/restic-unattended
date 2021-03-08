@@ -282,15 +282,11 @@ The scheduler routine of *restic-unattended* is inspired by the following blog a
 <a href="https://www.buymeacoffee.com/markdumay" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/lato-orange.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;"></a>
 
 ## License
-<a href="https://github.com/markdumay/restic-unattended/blob/main/LICENSE" alt="License">
-    <img src="https://img.shields.io/github/license/markdumay/restic-unattended.svg" />
-</a>
-
-Copyright © [Mark Dumay][blog]
-
+The restic-unattended codebase is released under the [MIT license][license]. The README.md file, and files in the "[wiki][wiki]" repository are licensed under the Attribution-NonCommercial 4.0 International ([CC BY-NC 4.0)][cc-by-nc-4.0] license.
 
 
 <!-- MARKDOWN PUBLIC LINKS -->
+[cc-by-nc-4.0]: https://creativecommons.org/licenses/by-nc/4.0/
 [cobra_url]: https://github.com/spf13/cobra
 [cron_url]: https://github.com/robfig/cron/
 [cron_usage]: https://godoc.org/github.com/robfig/cron#hdr-Usage
@@ -312,6 +308,8 @@ Copyright © [Mark Dumay][blog]
 [blog]: https://github.com/markdumay
 [repository]: https://github.com/markdumay/restic-unattended.git
 [dbm_url]: https://github.com/markdumay/dbm.git
+[license]: https://github.com/markdumay/restic-unattended/blob/main/LICENSE
+[wiki]: https://github.com/markdumay/restic-unattended/wiki/
 [wiki_cmd]: https://github.com/markdumay/restic-unattended/wiki/Available-Commands
 [wiki_env]: https://github.com/markdumay/restic-unattended/wiki/Supported-Environment-Variables
 [wiki_it]: https://github.com/markdumay/restic-unattended/wiki/Integration-Testing
