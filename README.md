@@ -99,6 +99,8 @@ Pending on your selected storage provider, you will need to specify the tokens a
 
 As regular Docker containers do not support external Swarm secrets, we will create local secret files for testing purposes. The credentials are stored in plain text, so this is not recommended for production. Add the secrets to `docker/docker-compose.yml` and `docker/docker-compose.dev.yml` to provide the credentials for the `restic-unattended` container. The `docker-compose.dev.yml` extends the base file `docker-compose.yml` to simplify the debugging, building, and running of Docker images.
 
+> Mounting file-based secrets from your working directory does not work with user namespaces enabled. See the [documentation][docker_userns] for more details.
+
 #### Define the Base Configuration
 Ensure the following configuration settings are defined in `docker-compose.yml`. Please note that the sensitive environment variables now have a `_FILE` suffix and point to the location `/run/secrets/`. Docker mounts secrets to this location within the container by default.
 
@@ -293,6 +295,7 @@ Copyright © [Mark Dumay][blog]
 [cron_url]: https://github.com/robfig/cron/
 [cron_usage]: https://godoc.org/github.com/robfig/cron#hdr-Usage
 [docker_bench]: https://github.com/docker/docker-bench-security
+[docker_userns]: https://docs.docker.com/engine/security/userns-remap/
 [docker_url]: https://docker.com
 [go_queue]: https://www.opsdash.com/blog/job-queues-in-go.html
 [pflag_url]: https://github.com/spf13/pflag
