@@ -99,6 +99,8 @@ Pending on your selected storage provider, you will need to specify the tokens a
 
 As regular Docker containers do not support external Swarm secrets, we will create local secret files for testing purposes. The credentials are stored in plain text, so this is not recommended for production. Add the secrets to `docker/docker-compose.yml` and `docker/docker-compose.dev.yml` to provide the credentials for the `restic-unattended` container. The `docker-compose.dev.yml` extends the base file `docker-compose.yml` to simplify the debugging, building, and running of Docker images.
 
+> Mounting file-based secrets from your working directory does not work with user namespaces enabled. See the [documentation][docker_userns] for more details.
+
 #### Define the Base Configuration
 Ensure the following configuration settings are defined in `docker-compose.yml`. Please note that the sensitive environment variables now have a `_FILE` suffix and point to the location `/run/secrets/`. Docker mounts secrets to this location within the container by default.
 
@@ -280,19 +282,16 @@ The scheduler routine of *restic-unattended* is inspired by the following blog a
 <a href="https://www.buymeacoffee.com/markdumay" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/lato-orange.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;"></a>
 
 ## License
-<a href="https://github.com/markdumay/restic-unattended/blob/main/LICENSE" alt="License">
-    <img src="https://img.shields.io/github/license/markdumay/restic-unattended.svg" />
-</a>
-
-Copyright © [Mark Dumay][blog]
-
+The restic-unattended codebase is released under the [MIT license][license]. The README.md file, and files in the "[wiki][wiki]" repository are licensed under the Attribution-NonCommercial 4.0 International ([CC BY-NC 4.0)][cc-by-nc-4.0] license.
 
 
 <!-- MARKDOWN PUBLIC LINKS -->
+[cc-by-nc-4.0]: https://creativecommons.org/licenses/by-nc/4.0/
 [cobra_url]: https://github.com/spf13/cobra
 [cron_url]: https://github.com/robfig/cron/
 [cron_usage]: https://godoc.org/github.com/robfig/cron#hdr-Usage
 [docker_bench]: https://github.com/docker/docker-bench-security
+[docker_userns]: https://docs.docker.com/engine/security/userns-remap/
 [docker_url]: https://docker.com
 [go_queue]: https://www.opsdash.com/blog/job-queues-in-go.html
 [pflag_url]: https://github.com/spf13/pflag
@@ -309,6 +308,8 @@ Copyright © [Mark Dumay][blog]
 [blog]: https://github.com/markdumay
 [repository]: https://github.com/markdumay/restic-unattended.git
 [dbm_url]: https://github.com/markdumay/dbm.git
+[license]: https://github.com/markdumay/restic-unattended/blob/main/LICENSE
+[wiki]: https://github.com/markdumay/restic-unattended/wiki/
 [wiki_cmd]: https://github.com/markdumay/restic-unattended/wiki/Available-Commands
 [wiki_env]: https://github.com/markdumay/restic-unattended/wiki/Supported-Environment-Variables
 [wiki_it]: https://github.com/markdumay/restic-unattended/wiki/Integration-Testing
