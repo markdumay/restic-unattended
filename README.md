@@ -282,7 +282,7 @@ The scheduler routine of *restic-unattended* is inspired by the following blog a
 <a href="https://www.buymeacoffee.com/markdumay" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/lato-orange.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;"></a>
 
 ## License
-The restic-unattended codebase is released under the [MIT license][license]. The README.md file, and files in the "[wiki][wiki]" repository are licensed under the Attribution-NonCommercial 4.0 International ([CC BY-NC 4.0)][cc-by-nc-4.0] license.
+The restic-unattended codebase is released under the [MIT license][license]. The README.md file, and files in the "[wiki][wiki]" repository are licensed under the Creative Commons *Attribution-NonCommercial 4.0 International* ([CC BY-NC 4.0)][cc-by-nc-4.0] license.
 
 
 <!-- MARKDOWN PUBLIC LINKS -->
