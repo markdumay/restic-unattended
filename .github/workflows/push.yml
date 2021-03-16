@@ -30,7 +30,7 @@ jobs:
         run: mv sample.env .env
 
       - name: Build and push development images
-        run: ./dbm/dbm.sh dev build --push
+        run: ./dbm/dbm.sh build dev --push
 
       - name: Build and push production images
-        run: ./dbm/dbm.sh prod build --push
+        run: ./dbm/dbm.sh build prod --push
