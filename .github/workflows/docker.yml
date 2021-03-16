@@ -20,7 +20,7 @@ jobs:
         run: mv sample.env .env
         
       - name: Build a development image
-        run: ./dbm/dbm.sh dev build
+        run: ./dbm/dbm.sh build dev
 
       - name: Build a production image
-        run: ./dbm/dbm.sh prod build
+        run: ./dbm/dbm.sh build prod
