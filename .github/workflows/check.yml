@@ -14,4 +14,4 @@ jobs:
           submodules: recursive
 
       - name: Check for image upgrades
-        run: ./dbm/dbm.sh check
+        run: ./dbm/dbm.sh check --no-digest
