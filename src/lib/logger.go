@@ -46,7 +46,7 @@ type LogMessage struct {
 const (
 	// Default prints logs as standard console output (no timestamp and level prefixes), for example:
 	// > Listing snapshots
-	Default int = iota
+	Default LogFormat = iota
 	// Pretty prints logs as semi-structured messages with a timestamp and level prefix, for example:
 	// > 2020-12-17T07:12:57+01:00 | INFO   | Listing snapshots
 	Pretty
@@ -138,6 +138,11 @@ func ParseFormat(formatStr string) (LogFormat, error) {
 		return LogFormat(JSON), nil
 	}
 	return LogFormat(Default), fmt.Errorf("Unknown Log Format String: '%s', using default", formatStr)
+}
+
+// String converts a typed log format to it's string representation.
+func (format LogFormat) String() string {
+	return [...]string{"default", "pretty", "json"}[format]
 }
 
 // UnmarshalLog converts json bytes into a LogMessage instance.
