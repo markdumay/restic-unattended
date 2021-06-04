@@ -68,6 +68,8 @@ Displays the current version of the restic-unattended binary.
 // Private Functions
 //======================================================================================================================
 
+// TODO: make loglevel and logformat consistent with shelldoc
+
 // init initializes the rootCmd for CLI processing, powered by Cobra.
 func init() {
 	// cobra.OnInitialize(initConfig)
