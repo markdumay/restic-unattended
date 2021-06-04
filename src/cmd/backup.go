@@ -56,6 +56,7 @@ Backup connects to a previously initialized repository only, unless the flag
 // Private Functions
 //======================================================================================================================
 
+// TODO: verify if Host and BackupPath are properly initialized; consider to move to PreRunE
 func addBackupOptions(c *cobra.Command) error {
 	f := c.Flags()
 	f.BoolVar(&InitRepository, "init", false, "initialize the repository if it does not exist yet")
