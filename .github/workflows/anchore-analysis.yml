@@ -22,10 +22,10 @@ jobs:
         run: mv sample.env .env
 
       - name: Build a production image
-        run: ./dbm/dbm.sh prod build --tag localbuild/testimage:latest
+        run: ./dbm/dbm.sh build prod --tag localbuild/testimage:latest
 
       - name: Run the Anchore scan
-        uses: anchore/scan-action@main
+        uses: anchore/scan-action@v3
         with:
           image: "localbuild/testimage:latest"
           acs-report-enable: true
