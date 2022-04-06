@@ -11,9 +11,10 @@ jobs:
     name: lint
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/setup-go@v2
       - uses: actions/checkout@v2
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.29
+          version: latest
           working-directory: src
