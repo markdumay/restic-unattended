@@ -1,4 +1,4 @@
-// Copyright © 2021 Mark Dumay. All rights reserved.
+// Copyright © 2022 Mark Dumay. All rights reserved.
 // Use of this source code is governed by The MIT License (MIT) that can be found in the LICENSE file.
 
 module github.com/markdumay/restic-unattended
