@@ -5,7 +5,7 @@ package lib
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path"
 	"testing"
 )
@@ -139,7 +139,7 @@ func TestWriteLine(t *testing.T) {
 	}
 
 	expected := fmt.Sprintf("%s\n%s\n%s\n", test1, test2, test3)
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		t.Errorf("WriteLine returned an error: %s", err.Error())
 	} else if string(data) != expected {
