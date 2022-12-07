@@ -1,3 +1,3 @@
 github.com/restic/restic v0.14.0 sha:1bc87e1718b65d7dd95f41ec8dc3a9d042704e20
-hub.docker.com/_/golang v1.19.3 sha256:7ffa70183b7596e6bc1b78c132dbba9a6e05a26cd30eaa9832fecad64b83f029
 hub.docker.com/_/alpine v3.17.0 sha256:36a03c95c2f0c83775d500101869054b927143a8320728f0e135dc151cb8ae61
+hub.docker.com/_/golang v1.19.4 sha256:04f76f956e51797a44847e066bde1341c01e09054d3878ae88c7f77f09897c4d
