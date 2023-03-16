@@ -6,7 +6,7 @@ module github.com/markdumay/restic-unattended
 go 1.18
 
 require (
-	github.com/imdario/mergo v0.3.13
+	github.com/imdario/mergo v0.3.14
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/robfig/cron/v3 v3.0.1
