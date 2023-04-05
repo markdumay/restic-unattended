@@ -9,10 +9,10 @@
 <!-- Badges -->
 <p align="center">
     <a href="https://github.com/markdumay/restic-unattended/actions/workflows/build-test.yml" alt="Build">
-        <img src="https://img.shields.io/github/workflow/status/markdumay/restic-unattended/build.svg" />
+        <img src="https://img.shields.io/github/actions/workflow/status/markdumay/restic-unattended/build-test.yml?branch=main" />
     </a>
     <a href="https://github.com/markdumay/restic-unattended/actions/workflows/push.yml" alt="Docker Hub">
-        <img src="https://img.shields.io/github/workflow/status/markdumay/restic-unattended/push.svg?label=docker" />
+        <img src="https://img.shields.io/github/actions/workflow/status/markdumay/restic-unattended/push.yml?branch=main&label=docker" />
     </a>
     <a href="https://www.codefactor.io/repository/github/markdumay/restic-unattended" alt="CodeFactor">
         <img src="https://img.shields.io/codefactor/grade/github/markdumay/restic-unattended" />
